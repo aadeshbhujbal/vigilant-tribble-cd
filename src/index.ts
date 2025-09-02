@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import express, { Request, Response, NextFunction } from 'express';
+import express, { type Request, type Response, type NextFunction } from 'express';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
@@ -43,7 +43,7 @@ const limiter = rateLimit({
   max: 100,
   message: {
     error: 'Too many requests from this IP, please try again later.',
-    retryAfter: '15 minutes'
+    retryAfter: '15 minutes',
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -61,26 +61,28 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
-  ...(config.env === 'development' ? ['http://localhost:8080', 'http://127.0.0.1:3000'] : [])
+  ...(config.env === 'development' ? ['http://localhost:8080', 'http://127.0.0.1:3000'] : []),
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      logger.warn(`CORS blocked origin: ${origin}`);
-      return callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept'],
-  maxAge: 86400 // 24 hours
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        logger.warn(`CORS blocked origin: ${origin}`);
+        return callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept'],
+    maxAge: 86400, // 24 hours
+  }),
+);
 
 // Swagger documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -106,16 +108,16 @@ app.use('*', (req: Request, res: Response) => {
 });
 
 // Error handler
-app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
+app.use((err: Error, req: Request, res: Response) => {
   logger.error(`Global error handler: ${err.message}`);
   logger.error(`Request: ${req.method} ${req.originalUrl}`);
-  
+
   const isDevelopment = config.env === 'development';
-  
+
   res.status(500).json({
     error: 'Internal Server Error',
     message: isDevelopment ? err.message : 'Something went wrong',
-    ...(isDevelopment && { stack: err.stack })
+    ...(isDevelopment && { stack: err.stack }),
   });
 });
 

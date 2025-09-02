@@ -1,23 +1,16 @@
-import { Request, Response } from "express";
-import config from "../config";
-import logger from "../utils/logger";
+import type { Request, Response } from 'express';
+import logger from '../utils/logger';
 
-export const healthCheck = async (
-  _req: Request,
-  res: Response
-): Promise<void> => {
+export const healthCheck = (_req: Request, res: Response): void => {
   res.json({
-    status: "Healthy",
+    status: 'Healthy',
     timestamp: new Date().toISOString(),
-    service: "Health Service",
-    version: "1.0.0",
+    service: 'Health Service',
+    version: '1.0.0',
   });
 };
 
-export const statusCheck = async (
-  _req: Request,
-  res: Response
-): Promise<void> => {
+export const statusCheck = (_req: Request, res: Response): void => {
   // System parameters only
   const memoryUsage = process.memoryUsage();
   const system = {
@@ -35,9 +28,9 @@ export const statusCheck = async (
   };
 
   logger.info(`Health check completed - System status: ok`);
-  
+
   res.json({
-    status: "ok",
+    status: 'ok',
     system,
   });
 };
