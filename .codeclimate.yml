@@ -1,0 +1,14 @@
+version: "2"
+plugins:
+  duplication:
+    enabled: false
+    config:
+      languages:
+        - javascript
+  eslint:
+    enabled: true
+  fixme:
+    enabled: true
+exclude_patterns:
+  - node_modules/
+  - build/

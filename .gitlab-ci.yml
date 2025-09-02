@@ -1,0 +1,61 @@
+include:
+  - project: natwestgroup/DigitalX/Technology/RiskFinanceLegalAndAuditSolutions/FinanceAndRiskDataPlatform/e-2-e-gitlab-cicd-templates
+    ref: e-2-e-gitlab-cicd-templates.5.0.0
+    file: cicd_pipeline_template.gitlab-ci.yml
+
+variables:
+  PROJECT_TYPE: "nodejs"
+  PROJECT_SUBTYPE: ""
+  DEPLOYMENT_TARGET: "pcf"
+  RUN_UNIT_TESTS: "false"
+  TRUNK_STRATEGY: "true"
+  SAST_DISABLED: "false"
+  SECRET_DETECTION_DISABLED: "false"
+
+code-quality-threshold-count:
+  variables:
+    BLOCKER_SCAN_COUNT_THRESHOLD: 0
+    CRITICAL_SCAN_COUNT_THRESHOLD: 2
+    MAJOR_SCAN_COUNT_THRESHOLD: 50
+    MINOR_SCAN_COUNT_THRESHOLD: 100
+    INFO_SCAN_COUNT_THRESHOLD: 0
+
+gemnasium-threshold-count:
+  variables:
+    CRITICAL_SCAN_COUNT_THRESHOLD: 0
+    HIGH_SCAN_COUNT_THRESHOLD: 2
+    MEDIUM_SCAN_COUNT_THRESHOLD: 30
+    LOW_SCAN_COUNT_THRESHOLD: 50
+    INFO_SCAN_COUNT_THRESHOLD: 0
+    UNKNOWN_SCAN_COUNT_THRESHOLD: 5
+
+sast-threshold-count:
+  variables:
+    CRITICAL_SCAN_COUNT_THRESHOLD: 0
+    HIGH_SCAN_COUNT_THRESHOLD: 2
+    MEDIUM_SCAN_COUNT_THRESHOLD: 30
+    LOW_SCAN_COUNT_THRESHOLD: 10
+    INFO_SCAN_COUNT_THRESHOLD: 0
+    UNKNOWN_SCAN_COUNT_THRESHOLD: 0
+
+gitlab-advanced-sast-threshold-count:
+  variables:
+    CRITICAL_SCAN_COUNT_THRESHOLD: 0
+    HIGH_SCAN_COUNT_THRESHOLD: 0
+    MEDIUM_SCAN_COUNT_THRESHOLD: 30
+    LOW_SCAN_COUNT_THRESHOLD: 10
+    INFO_SCAN_COUNT_THRESHOLD: 0
+    UNKNOWN_SCAN_COUNT_THRESHOLD: 0
+
+secret-detection-threshold-count:
+  variables:
+    CRITICAL_SCAN_COUNT_THRESHOLD: 0
+    HIGH_SCAN_COUNT_THRESHOLD: 0
+    MEDIUM_SCAN_COUNT_THRESHOLD: 0
+    LOW_SCAN_COUNT_THRESHOLD: 0
+    INFO_SCAN_COUNT_THRESHOLD: 0
+    UNKNOWN_SCAN_COUNT_THRESHOLD: 0
+
+code-coverage-web:
+  script:
+    - echo "Dummy job until test cases are written"

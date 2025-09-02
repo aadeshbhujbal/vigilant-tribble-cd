@@ -1,0 +1,10 @@
+node_modules
+.env
+.env.development
+.env.production
+.env.local
+.env.*.local
+dist
+logs*
+all.log
+error.log
