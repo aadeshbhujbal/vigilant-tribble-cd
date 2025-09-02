@@ -1,43 +1,108 @@
-// src/data/climateQuestionsAnswers.ts
-export interface ClimateQA {
-  id: string;
-  question: string;
-  category: string;
-  extractedAnswer: {
-    response: string;
-    confidence: number;
-    citations: Citation[];
-    explanation: string;
-    processingDetails: ProcessingDetails;
-    needsReprocessing?: boolean;
-    suggestedAction?: string;
-  };
-}
+import type {
+  DocumentUpload,
+  PythonProcessingRequest,
+  ProcessingStatus,
+} from '../types/questionnaire';
 
-export interface Citation {
-  documentId: string;
-  documentName: string;
-  pageNumber: number;
-  section: string;
-  excerpt: string;
-  relevanceScore: number;
-}
+// Comprehensive demo data for middleware functionality
 
-export interface ProcessingDetails {
-  chunksAnalyzed: number;
-  retrievalMethod: string;
-  rerankerScore: number;
-  processingTime: number;
-}
-
-export const demoClimateQA: ClimateQA[] = [
+// Climate Questions
+export const climateQuestions = [
   {
     id: 'q1',
     question:
-      'Describe the climate-related risks and opportunities the organization has identified over the short, medium, and long term.',
+      'What are the climate-related risks and opportunities identified in your annual report?',
     category: 'Risk Identification',
-    extractedAnswer: {
-      response: `Green Energy Corp has identified comprehensive climate-related risks and opportunities:
+    subcategory: 'Physical and Transition Risks',
+    required: true,
+    helpText:
+      'Include both physical risks (extreme weather, sea level rise) and transition risks (policy, technology, market changes)',
+  },
+  {
+    id: 'q2',
+    question:
+      "Describe the impact of climate-related risks and opportunities on the organization's businesses, strategy, and financial planning.",
+    category: 'Strategic Impact',
+    subcategory: 'Business Integration',
+    required: true,
+    helpText:
+      'Explain how climate considerations are integrated into business strategy, capital allocation, and financial planning',
+  },
+  {
+    id: 'q3',
+    question:
+      "Describe the organization's processes for identifying and assessing climate-related risks.",
+    category: 'Risk Management',
+    subcategory: 'Processes and Methodologies',
+    required: true,
+    helpText:
+      'Detail your risk identification workshops, assessment methodologies, and governance processes',
+  },
+  {
+    id: 'q4',
+    question:
+      'Describe the metrics and targets used by the organization to assess climate-related risks.',
+    category: 'Metrics and Targets',
+    subcategory: 'Performance Measurement',
+    required: true,
+    helpText: 'Include specific metrics, targets, and timeframes for climate risk management',
+  },
+  {
+    id: 'q5',
+    question: "Describe the organization's climate scenario analysis methodology.",
+    category: 'Scenario Analysis',
+    subcategory: 'Methodology and Scenarios',
+    required: true,
+    helpText: 'Explain your scenario analysis approach, including RCP scenarios and stress testing',
+  },
+  {
+    id: 'q6',
+    question: "What is your organization's current carbon footprint and reduction targets?",
+    category: 'Carbon Management',
+    subcategory: 'Emissions and Targets',
+    required: true,
+    helpText: 'Include Scope 1, 2, and 3 emissions data and reduction targets',
+  },
+  {
+    id: 'q7',
+    question:
+      'How does your organization assess climate-related financial risks in your investment portfolio?',
+    category: 'Financial Risk',
+    subcategory: 'Portfolio Assessment',
+    required: false,
+    helpText: 'Describe your approach to climate risk assessment in investment decisions',
+  },
+  {
+    id: 'q8',
+    question: 'What climate adaptation measures has your organization implemented?',
+    category: 'Adaptation',
+    subcategory: 'Resilience Measures',
+    required: false,
+    helpText: 'Include infrastructure, operational, and strategic adaptation measures',
+  },
+  {
+    id: 'q9',
+    question: 'How do you engage with stakeholders on climate-related issues?',
+    category: 'Stakeholder Engagement',
+    subcategory: 'Communication and Collaboration',
+    required: false,
+    helpText: 'Describe your stakeholder engagement processes and communication strategies',
+  },
+  {
+    id: 'q10',
+    question: 'What climate-related research and development initiatives are you pursuing?',
+    category: 'Innovation',
+    subcategory: 'R&D and Technology',
+    required: false,
+    helpText: 'Include details about climate-focused innovation projects and partnerships',
+  },
+];
+
+// Climate Answers
+export const climateAnswers = [
+  {
+    questionId: 'q1',
+    response: `Green Energy Corp has identified comprehensive climate-related risks and opportunities:
 
 **Short-term (1-3 years):**
 • Physical risks: Extreme weather events affecting operations ($2-5M annual impact)
@@ -50,45 +115,16 @@ export const demoClimateQA: ClimateQA[] = [
 **Long-term (10+ years):**
 • Physical risks: Sea level rise requiring $25M protective infrastructure
 • Opportunities: Green hydrogen market leadership ($200M revenue potential by 2035)`,
-
-      confidence: 0.89,
-      citations: [
-        {
-          documentId: 'doc_1',
-          documentName: 'annual_report_2023.pdf',
-          pageNumber: 45,
-          section: 'Climate Risk Assessment',
-          excerpt:
-            'Extreme weather events cost approximately $2-5 million annually in operational disruptions...',
-          relevanceScore: 0.92,
-        },
-        {
-          documentId: 'doc_2',
-          documentName: 'tcfd_disclosure_2023.pdf',
-          pageNumber: 12,
-          section: 'Strategic Planning',
-          excerpt:
-            'Sea level rise scenarios require estimated $25 million in infrastructure protection...',
-          relevanceScore: 0.87,
-        },
-      ],
-      explanation:
-        'High-confidence answer from 8 document chunks using dense + sparse retrieval with cross-encoder reranking.',
-      processingDetails: {
-        chunksAnalyzed: 8,
-        retrievalMethod: 'Dense + Sparse',
-        rerankerScore: 0.89,
-        processingTime: 4.2,
-      },
-    },
+    confidence: 0.89,
+    citations: [
+      'Annual Report 2023, Page 45, Section 4.2',
+      'TCFD Disclosure 2023, Page 12, Strategic Planning',
+    ],
+    processingTime: 4.2,
   },
   {
-    id: 'q2',
-    question:
-      "Describe the impact of climate-related risks and opportunities on the organization's businesses, strategy, and financial planning.",
-    category: 'Strategic Impact',
-    extractedAnswer: {
-      response: `Climate considerations are integrated across all business functions:
+    questionId: 'q2',
+    response: `Climate considerations are integrated across all business functions:
 
 **Business Impact:**
 • Revenue diversification: 40% from climate services (up from 15% in 2020)
@@ -98,42 +134,17 @@ export const demoClimateQA: ClimateQA[] = [
 **Strategic Integration:**
 • Capital allocation: 60% of $100M capex for climate-resilient tech
 • R&D focus: 70% of innovation budget on climate solutions
-• Geographic expansion prioritizes climate-stable regions
-
-**Financial Planning:**
-• Annual reserves: $15M for extreme weather impacts
-• Transition investments: $50M over 5 years for asset retirement
-• Growth funding: $75M for green hydrogen and carbon capture`,
-
-      confidence: 0.91,
-      citations: [
-        {
-          documentId: 'doc_1',
-          documentName: 'annual_report_2023.pdf',
-          pageNumber: 67,
-          section: 'Financial Strategy',
-          excerpt:
-            'Climate drives 60% of capital allocation with $100M annual resilient infrastructure investment...',
-          relevanceScore: 0.94,
-        },
-      ],
-      explanation:
-        'Comprehensive answer from financial and strategic sections with consistent cross-document validation.',
-      processingDetails: {
-        chunksAnalyzed: 12,
-        retrievalMethod: 'Dense + Sparse',
-        rerankerScore: 0.91,
-        processingTime: 5.1,
-      },
-    },
+• Geographic expansion prioritizes climate-stable regions`,
+    confidence: 0.91,
+    citations: [
+      'Annual Report 2023, Page 67, Financial Strategy',
+      'Strategic Plan 2023-2028, Climate Integration Section',
+    ],
+    processingTime: 5.1,
   },
   {
-    id: 'q3',
-    question:
-      "Describe the organization's processes for identifying and assessing climate-related risks.",
-    category: 'Risk Management',
-    extractedAnswer: {
-      response: `Multi-layered climate risk identification and assessment process:
+    questionId: 'q3',
+    response: `Multi-layered climate risk identification and assessment process:
 
 **Identification Process:**
 • Quarterly cross-functional climate risk workshops
@@ -144,44 +155,17 @@ export const demoClimateQA: ClimateQA[] = [
 **Assessment Methodology:**
 • Monte Carlo simulations for physical risk modeling
 • 20-year NPV calculations for transition risks
-• 1-5 scale probability-weighted risk scoring
-• Geographic risk mapping across 47 facilities
-
-**Governance:**
-• Quarterly board climate risk committee reviews
-• Annual third-party risk assessments
-• Enterprise risk management integration
-• Monthly climate indicator monitoring`,
-
-      confidence: 0.87,
-      citations: [
-        {
-          documentId: 'doc_2',
-          documentName: 'tcfd_disclosure_2023.pdf',
-          pageNumber: 8,
-          section: 'Risk Management',
-          excerpt:
-            'Quarterly workshops and RCP scenario analysis form our risk identification foundation...',
-          relevanceScore: 0.91,
-        },
-      ],
-      explanation:
-        'Process details from risk management and TCFD documentation with clear methodology description.',
-      processingDetails: {
-        chunksAnalyzed: 6,
-        retrievalMethod: 'Dense + Sparse',
-        rerankerScore: 0.87,
-        processingTime: 3.8,
-      },
-    },
+• 1-5 scale probability-weighted risk scoring`,
+    confidence: 0.87,
+    citations: [
+      'TCFD Disclosure 2023, Page 8, Risk Management',
+      'Climate Risk Policy 2023, Section 3.2',
+    ],
+    processingTime: 3.8,
   },
   {
-    id: 'q4',
-    question:
-      'Describe the metrics and targets used by the organization to assess climate-related risks.',
-    category: 'Metrics and Targets',
-    extractedAnswer: {
-      response: `Comprehensive climate metrics aligned with science-based targets:
+    questionId: 'q4',
+    response: `Comprehensive climate metrics aligned with science-based targets:
 
 **Physical Risk Metrics:**
 • Weather-related downtime: Target <2% annually (2023: 1.7%)
@@ -190,86 +174,284 @@ export const demoClimateQA: ClimateQA[] = [
 
 **Transition Risk Metrics:**
 • Carbon intensity: 15 tCO2e/MWh (Target: 10 tCO2e/MWh by 2025)
-• Renewable energy percentage: 78% (Target: 90% by 2026)
-• Stranded asset exposure: $12M (Target: <$5M by 2027)
-
-**Financial Metrics:**
-• Climate-related capex: $60M annually (Target: maintain >50%)
-• Green financing: $200M outstanding (Target: $300M by 2025)
-• Climate risk provisions: $15M (Target: maintain 2% of revenue)`,
-
-      confidence: 0.93,
-      citations: [
-        {
-          documentId: 'doc_1',
-          documentName: 'annual_report_2023.pdf',
-          pageNumber: 89,
-          section: 'Performance Metrics',
-          excerpt:
-            'Key climate metrics include carbon intensity of 15 tCO2e/MWh with target reduction to 10 tCO2e/MWh by 2025...',
-          relevanceScore: 0.95,
-        },
-      ],
-      explanation:
-        'Comprehensive metrics extracted from annual report with specific numerical targets.',
-      processingDetails: {
-        chunksAnalyzed: 10,
-        retrievalMethod: 'Dense + Sparse',
-        rerankerScore: 0.93,
-        processingTime: 4.7,
-      },
-    },
+• Renewable energy percentage: 78% (Target: 90% by 2026)`,
+    confidence: 0.93,
+    citations: [
+      'Annual Report 2023, Page 89, Performance Metrics',
+      'Sustainability Report 2023, Climate Targets Section',
+    ],
+    processingTime: 4.7,
   },
   {
-    id: 'q5',
-    question: "Describe the organization's climate scenario analysis methodology.",
-    category: 'Scenario Analysis',
-    extractedAnswer: {
-      response:
-        'Limited information available. The organization mentions conducting scenario analysis but specific methodologies are not detailed in available documents.',
-      confidence: 0.45,
-      citations: [
-        {
-          documentId: 'doc_2',
-          documentName: 'tcfd_disclosure_2023.pdf',
-          pageNumber: 18,
-          section: 'Scenario Analysis',
-          excerpt: 'The company conducts regular scenario analysis...',
-          relevanceScore: 0.52,
-        },
-      ],
-      explanation: 'Low confidence due to insufficient detail. Additional documentation needed.',
-      processingDetails: {
-        chunksAnalyzed: 3,
-        retrievalMethod: 'Dense + Sparse',
-        rerankerScore: 0.45,
-        processingTime: 2.1,
-      },
-      needsReprocessing: true,
-      suggestedAction: 'Request additional scenario analysis documentation',
-    },
+    questionId: 'q5',
+    response: `Advanced climate scenario analysis methodology:
+
+**Scenario Framework:**
+• IPCC RCP 2.6 (optimistic), RCP 4.5 (moderate), RCP 8.5 (pessimistic)
+• Time horizons: 2030, 2050, 2100
+• Geographic granularity: Regional and facility-specific analysis
+
+**Analysis Tools:**
+• Climate model integration with financial models
+• Monte Carlo simulations with 10,000+ iterations
+• Stress testing under extreme climate scenarios`,
+    confidence: 0.85,
+    citations: [
+      'Climate Scenario Analysis 2023, Methodology Document',
+      'TCFD Disclosure 2023, Scenario Analysis Section',
+    ],
+    processingTime: 6.2,
+  },
+  {
+    questionId: 'q6',
+    response: `Current carbon footprint and ambitious reduction targets:
+
+**2023 Emissions:**
+• Scope 1: 45,000 tCO2e (direct operations)
+• Scope 2: 120,000 tCO2e (purchased electricity)
+• Scope 3: 280,000 tCO2e (supply chain and use of products)
+
+**Reduction Targets:**
+• 2025: 30% reduction from 2020 baseline
+• 2030: 60% reduction from 2020 baseline
+• 2050: Net-zero emissions`,
+    confidence: 0.94,
+    citations: [
+      'Sustainability Report 2023, Emissions Data Section',
+      'Carbon Reduction Plan 2023-2050',
+    ],
+    processingTime: 3.5,
+  },
+  {
+    questionId: 'q7',
+    response: `Comprehensive climate risk assessment in investment portfolio:
+
+**Portfolio Analysis:**
+• Climate risk scoring for all investments (>$500M portfolio)
+• Carbon footprint tracking and reduction targets
+• Climate-aligned investment screening criteria
+
+**Risk Mitigation:**
+• Divestment from high-carbon assets ($25M completed in 2023)
+• Investment in climate solutions ($75M allocated)
+• Engagement with portfolio companies on climate disclosure`,
+    confidence: 0.88,
+    citations: ['Investment Policy 2023, Climate Risk Section', 'Portfolio Climate Report 2023'],
+    processingTime: 4.8,
+  },
+  {
+    questionId: 'q8',
+    response: `Multi-faceted climate adaptation measures:
+
+**Infrastructure Adaptation:**
+• Flood protection systems at coastal facilities ($15M investment)
+• Heat-resistant equipment upgrades ($8M investment)
+• Water conservation systems ($5M investment)
+
+**Operational Adaptation:**
+• Flexible work arrangements during extreme weather
+• Supply chain diversification for climate resilience
+• Emergency response protocols for climate events`,
+    confidence: 0.82,
+    citations: [
+      'Climate Action Plan 2023, Adaptation Section',
+      'Infrastructure Resilience Report 2023',
+    ],
+    processingTime: 4.1,
+  },
+  {
+    questionId: 'q9',
+    response: `Comprehensive stakeholder engagement on climate issues:
+
+**Internal Stakeholders:**
+• Quarterly climate briefings for board and executives
+• Annual climate training for all employees
+• Climate champions program across departments
+
+**External Stakeholders:**
+• Regular engagement with investors on climate strategy
+• Collaboration with suppliers on emissions reduction
+• Community partnerships for climate resilience`,
+    confidence: 0.86,
+    citations: ['Stakeholder Engagement Policy 2023', 'Climate Communication Strategy 2023'],
+    processingTime: 3.9,
+  },
+  {
+    questionId: 'q10',
+    response: `Innovative climate R&D initiatives:
+
+**Current Projects:**
+• Advanced energy storage systems ($12M investment)
+• Carbon capture and utilization technology ($8M investment)
+• Climate-resilient crop development ($5M investment)
+
+**Partnerships:**
+• University research collaborations (5 active partnerships)
+• Industry consortia participation (3 major initiatives)
+• Government-funded climate innovation programs`,
+    confidence: 0.84,
+    citations: ['R&D Strategy 2023, Climate Innovation Section', 'Partnership Portfolio 2023'],
+    processingTime: 4.3,
   },
 ];
 
-export const demoDocuments = [
+// Document Uploads
+export const demoDocumentUploads: DocumentUpload[] = [
   {
-    id: 'doc_1',
+    id: 'doc-001',
     fileName: 'annual_report_2023.pdf',
     fileType: 'pdf',
-    uploadedAt: '2024-01-15T09:30:00Z',
-    status: 'processed',
-    chunks: 156,
-    embeddings: 156,
-    organization: 'Green Energy Corp',
+    fileSize: 2048576, // 2MB
+    uploadedAt: new Date('2024-01-15T10:00:00Z'),
+    status: 'completed',
+    pythonJobId: 'python-job-001',
   },
   {
-    id: 'doc_2',
+    id: 'doc-002',
     fileName: 'tcfd_disclosure_2023.pdf',
     fileType: 'pdf',
-    uploadedAt: '2024-01-15T09:45:00Z',
-    status: 'processed',
-    chunks: 89,
-    embeddings: 89,
-    organization: 'Green Energy Corp',
+    fileSize: 1536000, // 1.5MB
+    uploadedAt: new Date('2024-01-15T10:05:00Z'),
+    status: 'completed',
+    pythonJobId: 'python-job-002',
+  },
+  {
+    id: 'doc-003',
+    fileName: 'sustainability_report_2023.docx',
+    fileType: 'docx',
+    fileSize: 1024000, // 1MB
+    uploadedAt: new Date('2024-01-15T10:10:00Z'),
+    status: 'completed',
+    pythonJobId: 'python-job-003',
+  },
+  {
+    id: 'doc-004',
+    fileName: 'climate_action_plan_2023.pdf',
+    fileType: 'pdf',
+    fileSize: 3072000, // 3MB
+    uploadedAt: new Date('2024-01-15T10:15:00Z'),
+    status: 'completed',
+    pythonJobId: 'python-job-004',
+  },
+  {
+    id: 'doc-005',
+    fileName: 'investment_policy_2023.pdf',
+    fileType: 'pdf',
+    fileSize: 1792000, // 1.75MB
+    uploadedAt: new Date('2024-01-15T10:20:00Z'),
+    status: 'processing',
+    pythonJobId: 'python-job-005',
+  },
+  {
+    id: 'doc-006',
+    fileName: 'rd_strategy_2023.docx',
+    fileType: 'docx',
+    fileSize: 2048000, // 2MB
+    uploadedAt: new Date('2024-01-15T10:25:00Z'),
+    status: 'uploaded',
+  },
+];
+
+// Processing Requests
+export const demoProcessingRequests: PythonProcessingRequest[] = [
+  {
+    id: 'req-001',
+    documentIds: ['doc-001', 'doc-002', 'doc-003'],
+    organization: 'green-energy-corp',
+    requestedAt: new Date('2024-01-15T10:00:00Z'),
+    status: 'completed',
+    pythonResponse: {
+      questions: [
+        'What are the climate-related risks identified in your annual report?',
+        'How do climate considerations impact your business strategy?',
+        'What is your current carbon footprint?',
+        'What adaptation measures have you implemented?',
+        'How do you engage with stakeholders on climate issues?',
+      ],
+      responses: [
+        'Our annual report identifies extreme weather events as a key physical risk...',
+        'Climate considerations drive 60% of our capital allocation decisions...',
+        'Our current carbon footprint is 45,000 tonnes CO2e...',
+        'We have implemented flood protection measures at our coastal facilities...',
+        'We engage quarterly with board and executives on climate strategy...',
+      ],
+      citations: [
+        'Annual Report 2023, Page 45, Section 4.2',
+        'TCFD Disclosure 2023, Page 12, Strategic Planning',
+        'Sustainability Report 2023, Page 23, Emissions Data',
+        'Climate Action Plan 2023, Page 15, Adaptation Strategies',
+        'Stakeholder Engagement Policy 2023, Section 2.1',
+      ],
+      processingTime: 45.2,
+    },
+  },
+  {
+    id: 'req-002',
+    documentIds: ['doc-004'],
+    organization: 'green-energy-corp',
+    requestedAt: new Date('2024-01-15T10:15:00Z'),
+    status: 'completed',
+    pythonResponse: {
+      questions: [
+        'What climate adaptation measures has your organization implemented?',
+        'What are your climate resilience strategies?',
+      ],
+      responses: [
+        'We have implemented comprehensive flood protection and heat-resistant systems...',
+        'Our resilience strategies include infrastructure upgrades and operational flexibility...',
+      ],
+      citations: [
+        'Climate Action Plan 2023, Adaptation Section, Pages 15-28',
+        'Climate Action Plan 2023, Resilience Section, Pages 29-42',
+      ],
+      processingTime: 32.8,
+    },
+  },
+  {
+    id: 'req-003',
+    documentIds: ['doc-005'],
+    organization: 'green-energy-corp',
+    requestedAt: new Date('2024-01-15T10:20:00Z'),
+    status: 'processing',
+  },
+  {
+    id: 'req-004',
+    documentIds: ['doc-006'],
+    organization: 'green-energy-corp',
+    requestedAt: new Date('2024-01-15T10:25:00Z'),
+    status: 'pending',
+  },
+];
+
+// Processing Statuses
+export const demoProcessingStatuses: ProcessingStatus[] = [
+  {
+    requestId: 'req-001',
+    status: 'completed',
+    progress: 100,
+    currentStep: 'Processing completed',
+    lastUpdated: new Date('2024-01-15T10:45:00Z'),
+  },
+  {
+    requestId: 'req-002',
+    status: 'completed',
+    progress: 100,
+    currentStep: 'Processing completed',
+    lastUpdated: new Date('2024-01-15T10:47:00Z'),
+  },
+  {
+    requestId: 'req-003',
+    status: 'processing',
+    progress: 65,
+    currentStep: 'Generating responses',
+    estimatedTimeRemaining: 180,
+    lastUpdated: new Date('2024-01-15T10:30:00Z'),
+  },
+  {
+    requestId: 'req-004',
+    status: 'pending',
+    progress: 0,
+    currentStep: 'Queued for processing',
+    lastUpdated: new Date('2024-01-15T10:25:00Z'),
   },
 ];
