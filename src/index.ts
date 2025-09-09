@@ -7,6 +7,7 @@ import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import healthRoutes from './routes/health';
+import questionRoutes from './routes/questions';
 import config from './config';
 import logger from './utils/logger';
 
@@ -89,6 +90,9 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Health routes
 app.use('/api/health', healthRoutes);
+
+// Question routes
+app.use('/api/questions', questionRoutes);
 
 // Debug endpoint (development only)
 if (config.env === 'development') {

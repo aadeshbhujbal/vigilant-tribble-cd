@@ -1,7 +1,6 @@
 {
   "name": "clima-risk-validator-service",
   "version": "1.0.0",
-  "type": "module",
   "main": "src/index.ts",
   "scripts": {
     "start": "node build/index.js",
@@ -12,9 +11,8 @@
     "lint:fix": "eslint src/**/*.ts --fix",
     "format": "prettier --write src/**/*.ts",
     "format:check": "prettier --check src/**/*.ts",
-    "type-check": "tsc --noEmit",
-    "prepare": "husky install"
-  },
+    "type-check": "tsc --noEmit"
+    },
   "dependencies": {
     "@types/multer": "^2.0.0",
     "cors": "^2.8.5",

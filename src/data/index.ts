@@ -1,7 +1,4 @@
-// Data index - export all demo data and utilities
+// Data index - export all demo data
 
 // Demo data
 export * from './demoData';
-
-// Re-export utility functions
-export * from '../utils/dataUtils';
