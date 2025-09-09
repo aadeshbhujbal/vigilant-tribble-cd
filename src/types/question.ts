@@ -20,4 +20,3 @@ export interface QuestionResponse {
   createdAt?: Date;
   updatedAt?: Date;
 }
-

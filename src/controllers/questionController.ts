@@ -10,12 +10,12 @@ export const getQuestions = (req: Request, res: Response): void => {
     // Combine questions with their answers
     const questionsWithAnswers = climateQuestions.map(question => {
       const answer = climateAnswers.find(a => a.questionId === question.id);
-      
+
       return {
         question: question.question,
         answer: answer?.response || 'No answer available',
         citation: answer?.citations || [],
-        explanation: question.helpText || 'No explanation available'
+        explanation: question.helpText || 'No explanation available',
       };
     });
 
@@ -24,7 +24,7 @@ export const getQuestions = (req: Request, res: Response): void => {
     res.json({
       success: true,
       data: questionsWithAnswers,
-      count: questionsWithAnswers.length
+      count: questionsWithAnswers.length,
     });
   } catch (error) {
     logger.error(`Error retrieving questions: ${error}`);
@@ -61,7 +61,7 @@ export const getQuestionById = (req: Request, res: Response): void => {
       question: question.question,
       answer: answer?.response || 'No answer available',
       citation: answer?.citations || [],
-      explanation: question.helpText || 'No explanation available'
+      explanation: question.helpText || 'No explanation available',
     };
 
     logger.info(`Retrieved question: ${id}`);
@@ -78,7 +78,6 @@ export const getQuestionById = (req: Request, res: Response): void => {
     });
   }
 };
-
 
 /**
  * Submit a new question

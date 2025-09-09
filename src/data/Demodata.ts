@@ -1,4 +1,3 @@
-
 // Comprehensive demo data for middleware functionality
 
 // Climate Questions
@@ -897,7 +896,7 @@ export const climateAnswers = [
 • Climate-resilient business operations
 • Climate event recovery planning
 • Climate crisis management training`,
-    confidence: 0.90,
+    confidence: 0.9,
     citations: [
       'Crisis Management Plan 2023, Climate Events',
       'Business Continuity 2023, Climate Resilience',
@@ -1005,4 +1004,3 @@ export const climateAnswers = [
     processingTime: 4.1,
   },
 ];
-

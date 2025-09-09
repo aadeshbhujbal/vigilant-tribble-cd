@@ -1,9 +1,5 @@
 import { Router } from 'express';
-import {
-  getQuestions,
-  getQuestionById,
-  submitQuestion,
-} from '../controllers/questionController';
+import { getQuestions, getQuestionById, submitQuestion } from '../controllers/questionController';
 
 const router = Router();
 
@@ -167,4 +163,3 @@ router.get('/:id', getQuestionById);
 router.post('/', submitQuestion);
 
 export default router;
-
