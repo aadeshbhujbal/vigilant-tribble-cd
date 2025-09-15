@@ -14,7 +14,7 @@ module.exports = [
         ecmaVersion: 2020,
         sourceType: 'module',
         project: './tsconfig.json',
-        tsconfigRootDir: __dirname,
+        tsconfigRootDir: __dirname // Remove comma here (line 17)
       },
       globals: {
         console: 'readonly',
@@ -25,12 +25,12 @@ module.exports = [
         global: 'readonly',
         module: 'readonly',
         require: 'readonly',
-        exports: 'readonly',
-      },
+        exports: 'readonly'
+      }
     },
     plugins: {
       '@typescript-eslint': typescript,
-      prettier: prettier,
+      prettier: prettier // Remove comma here (line 28)
     },
     rules: {
       // Prettier integration
@@ -70,8 +70,8 @@ module.exports = [
       'eol-last': 'warn',
       'comma-dangle': ['warn', 'always-multiline'],
       'semi': ['warn', 'always'], // Warn instead of error
-      'quotes': ['warn', 'single', { avoidEscape: true }], // Warn instead of error
-    },
+      'quotes': ['warn', 'single', { avoidEscape: true }] // Warn instead of error
+    }
   },
   {
     ignores: [
@@ -83,8 +83,8 @@ module.exports = [
       'logs/',
       '.env*',
       'coverage/',
-      '.nyc_output/',
-    ],
+      '.nyc_output/'
+    ]
   },
-  prettierConfig,
+  prettierConfig
 ];

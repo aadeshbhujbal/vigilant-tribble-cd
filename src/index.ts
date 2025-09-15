@@ -62,7 +62,15 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
-  ...(config.env === 'development' ? ['http://localhost:8080', 'http://127.0.0.1:3000'] : []),
+  'http://11.15.112.179:3005',
+  ...(config.env === 'development'
+    ? [
+        'http://localhost:8080',
+        'http://127.0.0.1:3000',
+        'http://11.15.112.179:3000',
+        'http://11.15.112.179:3001',
+      ]
+    : []),
 ];
 
 app.use(
