@@ -1,93 +1,298 @@
-# clima-risk-validator-service
+# Climate Risk Validator Service
 
+A Node.js middleware service for climate risk validation and question management, designed to work with Python backend services and Angular frontend applications.
 
+## 🚀 Features
 
-## Getting started
+- **Environment-specific configuration** for development, staging, and production
+- **Comprehensive logging** with Winston logger
+- **API documentation** with Swagger/OpenAPI
+- **Health check endpoints** for monitoring
+- **Rate limiting** and security features
+- **CORS configuration** for cross-origin requests
+- **TypeScript** with strict type checking
+- **Environment validation** on startup
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## 📋 Prerequisites
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- Node.js (v18 or higher)
+- npm or yarn
+- TypeScript
 
-## Add your files
+## 🛠️ Installation
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd clima-risk-validator-service
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Set up environment configuration (see [Environment Setup](#environment-setup) section)
+
+## 🌍 Environment Setup
+
+This project uses environment-specific configuration files for different deployment stages.
+
+### Environment Files
+
+**Template File (Committed to Git):**
+- `.env.template` - Template file with all configuration options and default values
+
+**Environment-Specific Files (Ignored by Git):**
+- `.env.development` - Development environment configuration
+- `.env.staging` - Staging environment configuration
+- `.env.production` - Production environment configuration
+- `.env` - Local development override (if needed)
+
+### Setup Instructions
+
+#### For New Developers
+1. Copy the template file to create your environment file:
+   ```bash
+   cp .env.template .env.development
+   ```
+
+2. Update the values in `.env.development` according to your local setup
+
+#### For Deployment
+1. Copy the appropriate environment file for your deployment:
+   ```bash
+   # For staging
+   cp .env.template .env.staging
+
+   # For production
+   cp .env.template .env.production
+   ```
+
+2. Update the values according to your deployment environment
+
+### Environment-Specific Configurations
+
+#### Development
+- Debug endpoints: **enabled** (with emoji startup messages)
+- Swagger documentation: **enabled**
+- Logging level: **debug**
+- Console logging: **enabled**
+- HTTPS: **disabled**
+- CORS: **localhost origins**
+
+#### Staging
+- Debug endpoints: **disabled** (clean startup messages)
+- Swagger documentation: **enabled**
+- Logging level: **info**
+- Console logging: **enabled**
+- HTTPS: **disabled** (can be enabled)
+- CORS: **staging domains**
+
+#### Production
+- Debug endpoints: **disabled** (clean startup messages)
+- Swagger documentation: **disabled**
+- Logging level: **warn**
+- Console logging: **disabled**
+- HTTPS: **enabled**
+- CORS: **production domains**
+
+## 🚀 Usage
+
+### Development
+```bash
+# Start development server with hot reload
+npm run dev
+
+# Start with specific environment
+npm run dev:staging
+npm run dev:production
+```
+
+### Production
+```bash
+# Build the application
+npm run build
+
+# Start production server
+npm run start
+
+# Start with specific environment
+npm run start:dev
+npm run start:staging
+npm run start:production
+```
+
+### Code Quality
+```bash
+# Lint code
+npm run lint
+
+# Fix linting issues
+npm run lint:fix
+
+# Check linting (strict)
+npm run lint:check
+
+# Format code
+npm run format
+
+# Check formatting
+npm run format:check
+
+# TypeScript type checking
+npm run type-check
+```
+
+## 📡 API Endpoints
+
+### Health Check
+- `GET /api/health` - Basic health check
+- `GET /api/health/status` - Detailed system status
+
+### Questions
+- `GET /api/questions` - Get all questions with answers
+- `GET /api/questions/:id` - Get specific question by ID
+- `POST /api/questions` - Submit a new question
+
+### Documentation
+- `GET /api-docs` - Swagger API documentation (development/staging only)
+
+### Debug (Development Only)
+- `GET /debug/env` - Environment configuration debug info
+
+## 🔧 Configuration
+
+The application supports comprehensive configuration through environment variables:
+
+### Core Settings
+- `NODE_ENV` - Environment (development, staging, production)
+- `PORT` - Server port
+- `HOST` - Server host
+- `NODE_TLS_REJECT_UNAUTHORIZED` - TLS certificate validation
+
+### Security Configuration
+- `ENABLE_HTTPS` - Enable HTTPS
+- `TRUST_PROXY` - Trust proxy headers
+- `CORS_ORIGINS` - Allowed CORS origins
+- `ALLOWED_METHODS` - Allowed HTTP methods
+- `ALLOWED_HEADERS` - Allowed headers
+- `CREDENTIALS` - Allow credentials in CORS
+- `MAX_AGE` - CORS preflight cache duration
+
+### Logging Configuration
+- `LOG_LEVEL` - Log level (error, warn, info, debug)
+- `LOG_ENABLE_CONSOLE` - Enable console logging
+- `LOG_ENABLE_FILE` - Enable file logging
+- `LOG_DIRECTORY` - Log file directory
+- `LOG_MAX_FILE_SIZE` - Maximum log file size
+- `LOG_MAX_FILES` - Maximum number of log files
+- `LOG_ENABLE_REQUEST_LOGGING` - Enable request logging
+- `LOG_ENABLE_ERROR_LOGGING` - Enable error logging
+
+### Feature Flags
+- `ENABLE_DEBUG_ENDPOINTS` - Enable debug endpoints
+- `ENABLE_SWAGGER` - Enable Swagger documentation
+- `ENABLE_CORS` - Enable CORS middleware
+- `ENABLE_RATE_LIMIT` - Enable rate limiting
+- `ENABLE_HEALTH_CHECK` - Enable health check endpoints
+
+### Application Configuration
+- `APP_NAME` - Application name
+- `APP_VERSION` - Application version
+- `API_PREFIX` - API route prefix
+- `MAX_REQUEST_SIZE` - Maximum request body size
+- `REQUEST_TIMEOUT` - Request timeout
+
+### Rate Limiting
+- `RATE_LIMIT_WINDOW_MS` - Rate limit window in milliseconds
+- `RATE_LIMIT_MAX` - Maximum requests per window
+
+### Service Integration
+- `PYTHON_SERVICE_URL` - Python service URL
+- `ANGULAR_APP_URL` - Angular application URL
+- `SERVICE_TIMEOUT` - Service request timeout
+- `RETRY_ATTEMPTS` - Number of retry attempts
+- `RETRY_DELAY` - Delay between retry attempts
+
+## 🏗️ Project Structure
 
 ```
-cd existing_repo
-git remote add origin https://natwest.gitlab-dedicated.com/natwestgroup/DigitalX/Technology/RiskFinanceLegalAndAuditSolutions/FinanceAndRiskDataPlatform/cdf/clima-risk-validator-service.git
-git branch -M main
-git push -uf origin main
+src/
+├── config/           # Configuration management
+├── controllers/      # Request handlers
+├── data/            # Demo data and data management
+├── routes/          # API route definitions
+├── types/           # TypeScript type definitions
+├── utils/           # Utility functions (logging, etc.)
+└── index.ts         # Application entry point
 ```
 
-## Integrate with your tools
+## 🔒 Security Features
 
-- [ ] [Set up project integrations](https://natwest.gitlab-dedicated.com/natwestgroup/DigitalX/Technology/RiskFinanceLegalAndAuditSolutions/FinanceAndRiskDataPlatform/cdf/clima-risk-validator-service/-/settings/integrations)
+- **Rate limiting** to prevent abuse
+- **CORS configuration** for secure cross-origin requests
+- **Environment validation** on startup
+- **HTTPS support** for production
+- **Request size limits** to prevent DoS attacks
+- **Comprehensive logging** for security monitoring
 
-## Collaborate with your team
+## 📊 Monitoring
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+The application provides several monitoring endpoints:
 
-## Test and Deploy
+- **Health check** (`/api/health`) - Basic service health
+- **System status** (`/api/health/status`) - Detailed system information
+- **Debug endpoint** (`/debug/env`) - Environment configuration (development only)
 
-Use the built-in continuous integration in GitLab.
+## 🚀 Deployment
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+### Development
+```bash
+npm run dev
+```
 
-***
+### Staging
+```bash
+npm run build:staging
+npm run start:staging
+```
 
-# Editing this README
+### Production
+```bash
+npm run build:production
+npm run start:production
+```
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+## 🤝 Contributing
 
-## Suggestions for a good README
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run linting and type checking:
+   ```bash
+   npm run lint:check
+   npm run type-check
+   ```
+5. Commit your changes
+6. Push to your fork
+7. Create a pull request
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+## 📝 License
 
-## Name
-Choose a self-explaining name for your project.
+This project is licensed under the MIT License.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+## 🆘 Support
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+For support and questions, please contact the development team or create an issue in the repository.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+## 🔄 Git Configuration
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+The `.gitignore` file is configured to:
+- ✅ **Include**: `.env.template` (committed to Git)
+- ❌ **Exclude**: All other `.env*` files (not committed to Git)
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+This ensures that:
+- The template is available for all developers
+- Sensitive environment-specific values are not committed
+- Each environment can have its own configuration

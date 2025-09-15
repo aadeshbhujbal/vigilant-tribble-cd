@@ -1,32 +1,24 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
 import express, { type Request, type Response, type NextFunction } from 'express';
-import cors from 'cors';
-import rateLimit from 'express-rate-limit';
+import cors, { type CorsOptions } from 'cors';
+import rateLimit, { type RateLimitRequestHandler } from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
-import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerJSDoc, { type OAS3Definition, type OAS3Options } from 'swagger-jsdoc';
 import healthRoutes from './routes/health';
 import questionRoutes from './routes/questions';
-import config from './config';
+import config, { validation } from './config';
 import logger from './utils/logger';
 
-// Swagger configuration
-const swaggerOptions = {
+// Swagger configuration with proper typing
+const swaggerOptions: OAS3Options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'clima-risk-validator-service API',
-      version: '1.0.0',
-      description: 'clima-risk-validator-service CDF',
+      title: config.swagger.title,
+      version: config.swagger.version,
+      description: config.swagger.description,
     },
-    servers: [
-      {
-        url: `http://localhost:${config.port}`,
-        description: 'Development server',
-      },
-    ],
-  },
+    servers: config.swagger.servers,
+  } as OAS3Definition,
   apis: ['./src/routes/**/*.ts'],
 };
 
@@ -35,96 +27,107 @@ const swaggerSpec = swaggerJSDoc(swaggerOptions);
 const app = express();
 
 // Basic middleware
-app.use(express.json({ limit: '1mb' }));
-app.use(express.urlencoded({ limit: '1mb', extended: true }));
+app.use(express.json({ limit: config.maxRequestSize }));
+app.use(express.urlencoded({ limit: config.maxRequestSize, extended: true }));
 
 // Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
-  message: {
-    error: 'Too many requests from this IP, please try again later.',
-    retryAfter: '15 minutes',
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+if (config.enableRateLimit) {
+  const limiter: RateLimitRequestHandler = rateLimit({
+    windowMs: config.security.rateLimitWindowMs,
+    max: config.security.rateLimitMax,
+    message: {
+      error: 'Too many requests from this IP, please try again later.',
+      retryAfter: `${Math.ceil(config.security.rateLimitWindowMs / 60000)} minutes`,
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
 
-app.use('/api/', limiter);
+  app.use(`${config.apiPrefix}/`, limiter);
+}
 
 // Request logger middleware
-app.use((req: Request, _res: Response, next: NextFunction) => {
-  logger.http(`${req.method} ${req.originalUrl}`);
-  next();
-});
+if (config.logging.enableRequestLogging) {
+  app.use((req: Request, _res: Response, next: NextFunction) => {
+    logger.http(`${req.method} ${req.originalUrl}`);
+    next();
+  });
+}
 
 // CORS configuration
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'http://11.15.112.179:3005',
-  ...(config.env === 'development'
-    ? [
-        'http://localhost:8080',
-        'http://127.0.0.1:3000',
-        'http://11.15.112.179:3000',
-        'http://11.15.112.179:3001',
-      ]
-    : []),
-];
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
+if (config.enableCors) {
+  const corsOptions: CorsOptions = {
+    origin: function (
+      origin: string | undefined,
+      callback: (_err: Error | null, _allow?: boolean) => void,
+    ): void {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
 
-      if (allowedOrigins.includes(origin)) {
+      if (config.security.corsOrigins.includes(origin)) {
         return callback(null, true);
       } else {
         logger.warn(`CORS blocked origin: ${origin}`);
         return callback(new Error('Not allowed by CORS'));
       }
     },
-    credentials: true,
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept'],
-    maxAge: 86400, // 24 hours
-  }),
-);
+    credentials: config.security.credentials,
+    methods: config.security.allowedMethods,
+    allowedHeaders: config.security.allowedHeaders,
+    maxAge: config.security.maxAge,
+  };
+
+  app.use(cors(corsOptions));
+}
 
 // Swagger documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+if (config.enableSwagger) {
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+}
 
 // Health routes
-app.use('/api/health', healthRoutes);
+if (config.enableHealthCheck) {
+  app.use(`${config.apiPrefix}/health`, healthRoutes);
+}
 
 // Question routes
-app.use('/api/questions', questionRoutes);
+app.use(`${config.apiPrefix}/questions`, questionRoutes);
 
 // Debug endpoint (development only)
-if (config.env === 'development') {
-  app.get('/debug/env', (_req: Request, res: Response) => {
-    res.json({
-      NODE_ENV: config.env,
-      PORT: config.port,
-      TLS_REJECT_UNAUTHORIZED: config.nodeTlsRejectUnauthorized,
-    });
+if (config.enableDebugEndpoints) {
+  app.get('/debug/env', (_req: Request, res: Response): void => {
+    const debugInfo = {
+      environment: config.environment,
+      port: config.port,
+      host: config.host,
+      nodeTlsRejectUnauthorized: config.nodeTlsRejectUnauthorized,
+      validation: validation,
+      config: {
+        enableDebugEndpoints: config.enableDebugEndpoints,
+        enableSwagger: config.enableSwagger,
+        enableCors: config.enableCors,
+        enableRateLimit: config.enableRateLimit,
+        enableHealthCheck: config.enableHealthCheck,
+      },
+    };
+    res.json(debugInfo);
   });
 }
 
 // 404 handler
-app.use('*', (req: Request, res: Response) => {
+app.use('*', (req: Request, res: Response): void => {
   logger.warn(`404 Not Found: ${req.originalUrl}`);
   res.status(404).json({ error: 'Not Found', path: req.originalUrl });
 });
 
 // Error handler
-app.use((err: Error, req: Request, res: Response) => {
-  logger.error(`Global error handler: ${err.message}`);
-  logger.error(`Request: ${req.method} ${req.originalUrl}`);
+app.use((err: Error, req: Request, res: Response, _next: NextFunction): void => {
+  if (config.logging.enableErrorLogging) {
+    logger.error(`Global error handler: ${err.message}`);
+    logger.error(`Request: ${req.method} ${req.originalUrl}`);
+  }
 
-  const isDevelopment = config.env === 'development';
+  const isDevelopment = config.environment === 'development';
 
   res.status(500).json({
     error: 'Internal Server Error',
@@ -133,8 +136,48 @@ app.use((err: Error, req: Request, res: Response) => {
   });
 });
 
-app.listen(config.port, () => {
-  logger.info(`Health Service running on port ${config.port}`);
-  logger.info(`Environment: ${config.env}`);
-  logger.info(`Swagger docs available at: http://localhost:${config.port}/api-docs`);
+app.listen(config.port, config.host, (): void => {
+  const isDevelopment = config.environment === 'development';
+
+  if (isDevelopment) {
+    logger.info('🚀 Application started successfully!');
+    logger.info(`📡 App started on port: ${config.port}`);
+    logger.info(`🌐 Server running on: ${config.host}:${config.port}`);
+    logger.info(`🏷️  Environment: ${config.environment}`);
+    logger.info(`📦 Version: ${config.appVersion}`);
+  } else {
+    logger.info(`${config.appName} started successfully`);
+    logger.info(`App started on port: ${config.port}`);
+    logger.info(`Server running on: ${config.host}:${config.port}`);
+    logger.info(`Environment: ${config.environment}`);
+    logger.info(`Version: ${config.appVersion}`);
+  }
+
+  if (config.enableSwagger) {
+    const protocol: string = config.security.enableHttps ? 'https' : 'http';
+    const swaggerUrl = `${protocol}://${config.host}:${config.port}/api-docs`;
+    if (isDevelopment) {
+      logger.info(`📚 Swagger docs available at: ${swaggerUrl}`);
+    } else {
+      logger.info(`Swagger docs available at: ${swaggerUrl}`);
+    }
+  }
+
+  if (config.enableDebugEndpoints) {
+    const protocol: string = config.security.enableHttps ? 'https' : 'http';
+    const debugUrl = `${protocol}://${config.host}:${config.port}/debug/env`;
+    if (isDevelopment) {
+      logger.info(`🐛 Debug endpoint available at: ${debugUrl}`);
+    } else {
+      logger.info(`Debug endpoint available at: ${debugUrl}`);
+    }
+  }
+
+  // Log validation warnings if any
+  if (validation.warnings.length > 0) {
+    logger.warn('Environment validation warnings:');
+    validation.warnings.forEach((warning: string) => {
+      logger.warn(`  ⚠️  ${warning}`);
+    });
+  }
 });

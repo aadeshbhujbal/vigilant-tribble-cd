@@ -38,6 +38,7 @@ module.exports = [
 
       // TypeScript specific rules - More relaxed
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      'no-unused-vars': 'off', // Turn off base rule as it can conflict with @typescript-eslint/no-unused-vars
       '@typescript-eslint/explicit-function-return-type': 'off', // Allow implicit return types
       '@typescript-eslint/no-explicit-any': 'warn', // Warn instead of error
       '@typescript-eslint/no-var-requires': 'warn',

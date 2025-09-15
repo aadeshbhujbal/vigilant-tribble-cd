@@ -4,13 +4,16 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Environment variables
+# Environment variables (keep .env.template for Git)
 .env
 .env.local
+.env.development
+.env.staging
+.env.production
+.env.test
 .env.development.local
 .env.test.local
 .env.production.local
-.env.*
 
 # Build outputs
 dist/

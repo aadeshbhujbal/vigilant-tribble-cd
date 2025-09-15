@@ -1,7 +1,7 @@
 import winston from 'winston';
 
-// Define log levels
-const levels = {
+// Define log levels with proper typing
+const levels: winston.config.AbstractConfigSetLevels = {
   error: 0,
   warn: 1,
   info: 2,
@@ -9,8 +9,8 @@ const levels = {
   debug: 4,
 };
 
-// Define colors for each level
-const colors = {
+// Define colors for each level with proper typing
+const colors: winston.config.AbstractConfigSetColors = {
   error: 'red',
   warn: 'yellow',
   info: 'green',
@@ -22,7 +22,7 @@ const colors = {
 winston.addColors(colors);
 
 // Define which level to log based on environment
-const level = () => {
+const level = (): string => {
   const env = process.env.NODE_ENV || 'development';
   const isDevelopment = env === 'development';
   return isDevelopment ? 'debug' : 'warn';
@@ -32,11 +32,14 @@ const level = () => {
 const format = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
   winston.format.colorize({ all: true }),
-  winston.format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`),
+  winston.format.printf(
+    (info: winston.Logform.TransformableInfo): string =>
+      `${info.timestamp} ${info.level}: ${info.message}`,
+  ),
 );
 
 // Define transports
-const transports = [
+const transports: winston.transport[] = [
   new winston.transports.Console(),
   new winston.transports.File({
     filename: 'logs/error.log',
@@ -46,7 +49,7 @@ const transports = [
 ];
 
 // Create the logger
-const logger = winston.createLogger({
+const logger: winston.Logger = winston.createLogger({
   level: level(),
   levels,
   format,
