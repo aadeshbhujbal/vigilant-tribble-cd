@@ -39,6 +39,18 @@ export interface SwaggerConfig {
   basePath: string;
 }
 
+export interface FileUploadConfig {
+  enabled: boolean;
+  maxFileSize: number;
+  allowedMimeTypes: string[];
+  allowedExtensions: string[];
+  maxFiles: number;
+  uploadTimeout: number;
+  enableValidation: boolean;
+  enableMalwareScan: boolean;
+  pythonServiceUrl?: string;
+}
+
 export interface MiddlewareConfig {
   // Core settings
   environment: Environment;
@@ -52,11 +64,13 @@ export interface MiddlewareConfig {
   enableCors: boolean;
   enableRateLimit: boolean;
   enableHealthCheck: boolean;
+  enableFileUpload: boolean;
 
   // Middleware specific
   security: SecurityConfig;
   logging: LoggingConfig;
   swagger: SwaggerConfig;
+  fileUpload: FileUploadConfig;
 
   // Application specific
   appName: string;

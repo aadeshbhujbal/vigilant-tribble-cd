@@ -92,6 +92,7 @@ const config: MiddlewareConfig = {
   enableCors: parseBoolean(process.env.ENABLE_CORS, true),
   enableRateLimit: parseBoolean(process.env.ENABLE_RATE_LIMIT, true),
   enableHealthCheck: parseBoolean(process.env.ENABLE_HEALTH_CHECK, true),
+  enableFileUpload: parseBoolean(process.env.ENABLE_FILE_UPLOAD, true),
 
   // Security configuration
   security: {
@@ -141,6 +142,40 @@ const config: MiddlewareConfig = {
       },
     ],
     basePath: process.env.API_PREFIX || '/api',
+  },
+
+  // File upload configuration
+  fileUpload: {
+    enabled: parseBoolean(process.env.ENABLE_FILE_UPLOAD, true),
+    maxFileSize: parseNumber(process.env.FILE_UPLOAD_MAX_SIZE, 50 * 1024 * 1024), // 50MB
+    allowedMimeTypes: parseCommaSeparated(process.env.FILE_UPLOAD_ALLOWED_TYPES, [
+      'application/pdf',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'text/csv',
+      'application/json',
+      'text/plain',
+      'image/jpeg',
+      'image/png',
+      'image/tiff',
+    ]),
+    allowedExtensions: parseCommaSeparated(process.env.FILE_UPLOAD_ALLOWED_EXTENSIONS, [
+      '.pdf',
+      '.xls',
+      '.xlsx',
+      '.csv',
+      '.json',
+      '.txt',
+      '.jpg',
+      '.jpeg',
+      '.png',
+      '.tiff',
+    ]),
+    maxFiles: parseNumber(process.env.FILE_UPLOAD_MAX_FILES, 5),
+    uploadTimeout: parseNumber(process.env.FILE_UPLOAD_TIMEOUT, 300000), // 5 minutes
+    enableValidation: parseBoolean(process.env.FILE_UPLOAD_ENABLE_VALIDATION, true),
+    enableMalwareScan: parseBoolean(process.env.FILE_UPLOAD_ENABLE_MALWARE_SCAN, false),
+    pythonServiceUrl: process.env.PYTHON_SERVICE_URL,
   },
 
   // Application specific

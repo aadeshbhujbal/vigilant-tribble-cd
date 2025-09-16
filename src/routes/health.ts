@@ -31,6 +31,37 @@ const router = Router();
  *                 version:
  *                   type: string
  *                   example: 1.0.0
+ *                 features:
+ *                   type: object
+ *                   properties:
+ *                     fileUpload:
+ *                       type: object
+ *                       properties:
+ *                         enabled:
+ *                           type: boolean
+ *                         maxFileSize:
+ *                           type: number
+ *                         maxFiles:
+ *                           type: number
+ *                         allowedTypes:
+ *                           type: number
+ *                         pythonServiceConfigured:
+ *                           type: boolean
+ *                     swagger:
+ *                       type: object
+ *                       properties:
+ *                         enabled:
+ *                           type: boolean
+ *                     cors:
+ *                       type: object
+ *                       properties:
+ *                         enabled:
+ *                           type: boolean
+ *                     rateLimit:
+ *                       type: object
+ *                       properties:
+ *                         enabled:
+ *                           type: boolean
  */
 router.get('/', healthCheck);
 

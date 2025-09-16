@@ -1,13 +1,34 @@
 import type { Request, Response } from 'express';
 import logger from '../utils/logger';
+import config from '../config';
 
 export const healthCheck = (_req: Request, res: Response): void => {
-  res.json({
+  const healthStatus = {
     status: 'Healthy',
     timestamp: new Date().toISOString(),
     service: 'Health Service',
-    version: '1.0.0',
-  });
+    version: config.appVersion,
+    features: {
+      fileUpload: {
+        enabled: config.enableFileUpload,
+        maxFileSize: config.fileUpload.maxFileSize,
+        maxFiles: config.fileUpload.maxFiles,
+        allowedTypes: config.fileUpload.allowedMimeTypes.length,
+        pythonServiceConfigured: !!config.fileUpload.pythonServiceUrl,
+      },
+      swagger: {
+        enabled: config.enableSwagger,
+      },
+      cors: {
+        enabled: config.enableCors,
+      },
+      rateLimit: {
+        enabled: config.enableRateLimit,
+      },
+    },
+  };
+
+  res.json(healthStatus);
 };
 
 export const statusCheck = (_req: Request, res: Response): void => {

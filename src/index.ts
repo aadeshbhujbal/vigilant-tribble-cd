@@ -5,6 +5,7 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc, { type OAS3Definition, type OAS3Options } from 'swagger-jsdoc';
 import healthRoutes from './routes/health';
 import questionRoutes from './routes/questions';
+import uploadRoutes from './routes/upload';
 import config, { validation } from './config';
 import logger from './utils/logger';
 
@@ -64,6 +65,14 @@ if (config.enableCors) {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
 
+      // In development, allow same origin requests (for Swagger UI)
+      if (config.environment === 'development') {
+        const serverOrigin = `http://${config.host}:${config.port}`;
+        if (origin === serverOrigin) {
+          return callback(null, true);
+        }
+      }
+
       if (config.security.corsOrigins.includes(origin)) {
         return callback(null, true);
       } else {
@@ -93,6 +102,11 @@ if (config.enableHealthCheck) {
 // Question routes
 app.use(`${config.apiPrefix}/questions`, questionRoutes);
 
+// Upload routes
+if (config.enableFileUpload) {
+  app.use(`${config.apiPrefix}/upload`, uploadRoutes);
+}
+
 // Debug endpoint (development only)
 if (config.enableDebugEndpoints) {
   app.get('/debug/env', (_req: Request, res: Response): void => {
@@ -108,6 +122,7 @@ if (config.enableDebugEndpoints) {
         enableCors: config.enableCors,
         enableRateLimit: config.enableRateLimit,
         enableHealthCheck: config.enableHealthCheck,
+        enableFileUpload: config.enableFileUpload,
       },
     };
     res.json(debugInfo);
@@ -170,6 +185,18 @@ app.listen(config.port, config.host, (): void => {
       logger.info(`🐛 Debug endpoint available at: ${debugUrl}`);
     } else {
       logger.info(`Debug endpoint available at: ${debugUrl}`);
+    }
+  }
+
+  if (config.enableFileUpload) {
+    const protocol: string = config.security.enableHttps ? 'https' : 'http';
+    const uploadUrl = `${protocol}://${config.host}:${config.port}${config.apiPrefix}/upload`;
+    if (isDevelopment) {
+      logger.info(`📁 File upload endpoint available at: ${uploadUrl} (supports single or multiple files)`);
+      logger.info(`📊 Max file size: ${Math.round(config.fileUpload.maxFileSize / 1024 / 1024)}MB`);
+      logger.info(`📋 Allowed file types: ${config.fileUpload.allowedMimeTypes.join(', ')}`);
+    } else {
+      logger.info(`File upload endpoint available at: ${uploadUrl}`);
     }
   }
 
