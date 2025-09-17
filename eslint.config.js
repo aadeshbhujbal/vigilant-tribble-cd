@@ -25,7 +25,13 @@ module.exports = [
         global: 'readonly',
         module: 'readonly',
         require: 'readonly',
-        exports: 'readonly'
+        exports: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        fetch: 'readonly',
+        Express: 'readonly'
       }
     },
     plugins: {
@@ -71,7 +77,84 @@ module.exports = [
       'eol-last': 'warn',
       'comma-dangle': ['warn', 'always-multiline'],
       'semi': ['warn', 'always'], // Warn instead of error
-      'quotes': ['warn', 'single', { avoidEscape: true }] // Warn instead of error
+      'quotes': ['warn', 'single', { avoidEscape: true }], // Warn instead of error
+
+      // Code complexity and size limits
+      'max-lines': ['warn', { max: 250, skipBlankLines: true, skipComments: true }],
+      'max-lines-per-function': ['warn', { max: 25, skipBlankLines: true, skipComments: true }],
+      'complexity': ['warn', { max: 5 }],
+
+      // Security rules
+      'no-eval': 'error',
+      'no-implied-eval': 'error',
+      'no-new-func': 'error',
+      'no-script-url': 'error',
+      'no-alert': 'warn',
+      'no-console': 'off', // Allow console in development
+      'no-debugger': 'warn',
+
+      // Code quality rules
+      'no-var': 'error',
+      'prefer-const': 'error',
+      'prefer-arrow-callback': 'warn',
+      'prefer-template': 'warn',
+      'prefer-destructuring': ['warn', { object: true, array: false }],
+      'object-shorthand': 'warn',
+      'no-duplicate-imports': 'error',
+      'no-useless-return': 'warn',
+      'no-useless-concat': 'warn',
+      'no-useless-call': 'warn',
+      'no-param-reassign': 'warn',
+      'no-return-assign': 'error',
+      'no-sequences': 'warn',
+      'no-throw-literal': 'warn',
+      'no-unmodified-loop-condition': 'warn',
+      'no-unused-expressions': 'warn',
+      'no-useless-escape': 'warn',
+      'no-void': 'warn',
+      'no-with': 'error',
+      'radix': 'warn',
+      'yoda': 'warn',
+
+      // Naming conventions
+      'camelcase': ['warn', { properties: 'never', ignoreDestructuring: true }],
+      'new-cap': 'warn',
+      'no-new-object': 'warn',
+      'no-array-constructor': 'warn',
+
+      // TypeScript specific security and quality rules
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-var-requires': 'warn',
+      '@typescript-eslint/prefer-nullish-coalescing': 'warn',
+      '@typescript-eslint/prefer-optional-chain': 'warn',
+      '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
+      '@typescript-eslint/no-non-null-assertion': 'warn',
+      '@typescript-eslint/prefer-as-const': 'warn',
+      '@typescript-eslint/no-inferrable-types': 'warn',
+      '@typescript-eslint/consistent-type-imports': 'warn',
+      '@typescript-eslint/consistent-type-exports': 'warn',
+      '@typescript-eslint/no-import-type-side-effects': 'warn',
+      '@typescript-eslint/array-type': ['warn', { default: 'array-simple' }],
+      '@typescript-eslint/consistent-indexed-object-style': 'warn',
+      '@typescript-eslint/consistent-type-definitions': ['warn', 'interface'],
+      '@typescript-eslint/method-signature-style': ['warn', 'property'],
+      '@typescript-eslint/no-confusing-non-null-assertion': 'warn',
+      '@typescript-eslint/no-duplicate-enum-values': 'error',
+      '@typescript-eslint/no-empty-interface': 'warn',
+      '@typescript-eslint/no-extra-non-null-assertion': 'error',
+      '@typescript-eslint/no-misused-new': 'error',
+      '@typescript-eslint/no-namespace': 'warn',
+      '@typescript-eslint/no-non-null-asserted-optional-chain': 'error',
+      '@typescript-eslint/no-require-imports': 'warn',
+      '@typescript-eslint/no-this-alias': 'warn',
+      '@typescript-eslint/no-unnecessary-type-constraint': 'warn',
+      '@typescript-eslint/no-unsafe-declaration-merging': 'warn',
+      '@typescript-eslint/prefer-enum-initializers': 'warn',
+      '@typescript-eslint/prefer-function-type': 'warn',
+      '@typescript-eslint/prefer-literal-enum-member': 'warn',
+      '@typescript-eslint/prefer-namespace-keyword': 'warn',
+      '@typescript-eslint/triple-slash-reference': 'warn',
+      '@typescript-eslint/unified-signatures': 'warn'
     }
   },
   {

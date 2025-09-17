@@ -1,8 +1,62 @@
 import multer from 'multer';
 import type { Request, Response, NextFunction } from 'express';
 import type { FileUploadConfig } from '../types/environment';
-import type { FileValidationResult, UploadedFile } from '../types/upload';
+import type { FileValidationResult } from '../types/upload';
 import logger from '../utils/logger';
+
+/**
+ * Helper function to extract files from request
+ */
+const extractFilesFromRequest = (req: Request): Express.Multer.File[] => {
+  let files: Express.Multer.File[] = [];
+
+  if (req.files) {
+    if (Array.isArray(req.files)) {
+      const { files: reqFiles } = req;
+      files = reqFiles;
+    } else {
+      // Handle multiple files with different field names
+      const { files: fileValues } = req;
+      files = Object.values(fileValues).flat();
+    }
+  } else if (req.file) {
+    files = [req.file];
+  }
+
+  return files;
+};
+
+/**
+ * Helper function to handle validation failure
+ */
+const handleValidationFailure = (
+  res: Response,
+  validationResult: FileValidationResult,
+  files: Express.Multer.File[],
+): void => {
+  logger.warn('File validation failed', {
+    errors: validationResult.errors,
+    warnings: validationResult.warnings,
+    files: files.map(f => ({ name: f?.originalname, size: f?.size, type: f?.mimetype })),
+  });
+
+  res.status(400).json({
+    success: false,
+    message: 'File validation failed',
+    errors: validationResult.errors,
+    warnings: validationResult.warnings,
+  });
+};
+
+/**
+ * Helper function to log validation warnings
+ */
+const logValidationWarnings = (warnings: string[], files: Express.Multer.File[]): void => {
+  logger.info('File validation warnings', {
+    warnings,
+    files: files.map(f => ({ name: f?.originalname, size: f?.size, type: f?.mimetype })),
+  });
+};
 
 /**
  * File validation middleware
@@ -18,43 +72,16 @@ export const validateFile = (config: FileUploadConfig) => {
       return;
     }
 
-    // Handle different file upload scenarios
-    let files: Express.Multer.File[] = [];
-
-    if (req.files) {
-      if (Array.isArray(req.files)) {
-        files = req.files;
-      } else {
-        // Handle multiple files with different field names
-        files = Object.values(req.files).flat();
-      }
-    } else if (req.file) {
-      files = [req.file];
-    }
-
+    const files = extractFilesFromRequest(req);
     const validationResult = validateFiles(files, config);
 
     if (!validationResult.isValid) {
-      logger.warn('File validation failed', {
-        errors: validationResult.errors,
-        warnings: validationResult.warnings,
-        files: files.map(f => ({ name: f?.originalname, size: f?.size, type: f?.mimetype })),
-      });
-
-      res.status(400).json({
-        success: false,
-        message: 'File validation failed',
-        errors: validationResult.errors,
-        warnings: validationResult.warnings,
-      });
+      handleValidationFailure(res, validationResult, files);
       return;
     }
 
     if (validationResult.warnings.length > 0) {
-      logger.info('File validation warnings', {
-        warnings: validationResult.warnings,
-        files: files.map(f => ({ name: f?.originalname, size: f?.size, type: f?.mimetype })),
-      });
+      logValidationWarnings(validationResult.warnings, files);
     }
 
     next();
@@ -62,9 +89,89 @@ export const validateFile = (config: FileUploadConfig) => {
 };
 
 /**
+ * Helper function to validate individual file
+ */
+const validateIndividualFile = (
+  file: Express.Multer.File,
+  index: number,
+  config: FileUploadConfig,
+): { errors: string[]; warnings: string[] } => {
+  const fileErrors: string[] = [];
+  const fileWarnings: string[] = [];
+
+  // Check file size
+  if (file.size > config.maxFileSize) {
+    fileErrors.push(
+      `File ${index + 1} (${file.originalname}) exceeds maximum size of ${formatBytes(config.maxFileSize)}`,
+    );
+  }
+
+  // Check MIME type
+  if (!config.allowedMimeTypes.includes(file.mimetype)) {
+    fileErrors.push(
+      `File ${index + 1} (${file.originalname}) has unsupported MIME type: ${file.mimetype}`,
+    );
+  }
+
+  // Check file extension
+  const fileExtension = getFileExtension(file.originalname);
+  if (!config.allowedExtensions.includes(fileExtension)) {
+    fileErrors.push(
+      `File ${index + 1} (${file.originalname}) has unsupported extension: ${fileExtension}`,
+    );
+  }
+
+  return { errors: fileErrors, warnings: fileWarnings };
+};
+
+/**
+ * Helper function to validate file count
+ */
+const validateFileCount = (
+  validFiles: Express.Multer.File[],
+  config: FileUploadConfig,
+  errors: string[],
+): void => {
+  if (validFiles.length > config.maxFiles) {
+    errors.push(
+      `Too many files. Maximum allowed: ${config.maxFiles}, received: ${validFiles.length}`,
+    );
+  }
+};
+
+/**
+ * Helper function to validate all files
+ */
+const validateAllFiles = (
+  validFiles: Express.Multer.File[],
+  config: FileUploadConfig,
+  errors: string[],
+  warnings: string[],
+): void => {
+  validFiles.forEach((file, index) => {
+    const fileValidation = validateIndividualFile(file, index, config);
+    errors.push(...fileValidation.errors);
+    warnings.push(...fileValidation.warnings);
+
+    // Check for suspicious file names
+    if (isSuspiciousFileName(file.originalname)) {
+      warnings.push(`File ${index + 1} (${file.originalname}) has a suspicious name`);
+    }
+
+    // Check for empty files
+    if (file.size === 0) {
+      warnings.push(`File ${index + 1} (${file.originalname}) is empty`);
+    }
+  });
+};
+
+/**
  * Validate uploaded files against configuration
  */
-const validateFiles = (files: Express.Multer.File[], config: FileUploadConfig): FileValidationResult => {
+const validateFiles = (
+  files: Express.Multer.File[],
+  config: FileUploadConfig,
+): FileValidationResult => {
   const errors: string[] = [];
   const warnings: string[] = [];
 
@@ -77,44 +184,10 @@ const validateFiles = (files: Express.Multer.File[], config: FileUploadConfig): 
   }
 
   // Check number of files
-  if (validFiles.length > config.maxFiles) {
-    errors.push(`Too many files. Maximum allowed: ${config.maxFiles}, received: ${validFiles.length}`);
-  }
+  validateFileCount(validFiles, config, errors);
 
   // Validate each file
-  validFiles.forEach((file, index) => {
-    const fileErrors: string[] = [];
-    const fileWarnings: string[] = [];
-
-    // Check file size
-    if (file.size > config.maxFileSize) {
-      fileErrors.push(`File ${index + 1} (${file.originalname}) exceeds maximum size of ${formatBytes(config.maxFileSize)}`);
-    }
-
-    // Check MIME type
-    if (!config.allowedMimeTypes.includes(file.mimetype)) {
-      fileErrors.push(`File ${index + 1} (${file.originalname}) has unsupported MIME type: ${file.mimetype}`);
-    }
-
-    // Check file extension
-    const fileExtension = getFileExtension(file.originalname);
-    if (!config.allowedExtensions.includes(fileExtension)) {
-      fileErrors.push(`File ${index + 1} (${file.originalname}) has unsupported extension: ${fileExtension}`);
-    }
-
-    // Check for suspicious file names
-    if (isSuspiciousFileName(file.originalname)) {
-      fileWarnings.push(`File ${index + 1} (${file.originalname}) has a suspicious name`);
-    }
-
-    // Check for empty files
-    if (file.size === 0) {
-      fileWarnings.push(`File ${index + 1} (${file.originalname}) is empty`);
-    }
-
-    errors.push(...fileErrors);
-    warnings.push(...fileWarnings);
-  });
+  validateAllFiles(validFiles, config, errors, warnings);
 
   return {
     isValid: errors.length === 0,
@@ -157,7 +230,7 @@ const formatBytes = (bytes: number): string => {
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 };
 
 /**
@@ -174,8 +247,10 @@ export const createMulterConfig = (config: FileUploadConfig) => {
       // Basic file filter - detailed validation happens in validateFile middleware
       const fileExtension = getFileExtension(file.originalname);
 
-      if (config.allowedMimeTypes.includes(file.mimetype) &&
-          config.allowedExtensions.includes(fileExtension)) {
+      if (
+        config.allowedMimeTypes.includes(file.mimetype) &&
+        config.allowedExtensions.includes(fileExtension)
+      ) {
         cb(null, true);
       } else {
         cb(new Error(`File type not allowed: ${file.mimetype} (${fileExtension})`));
@@ -185,38 +260,39 @@ export const createMulterConfig = (config: FileUploadConfig) => {
 };
 
 /**
+ * Multer error message mapping
+ */
+const MULTER_ERROR_MESSAGES: Record<string, string> = {
+  LIMIT_FILE_SIZE: 'File too large',
+  LIMIT_FILE_COUNT: 'Too many files',
+  LIMIT_UNEXPECTED_FILE: 'Unexpected file field',
+  LIMIT_PART_COUNT: 'Too many parts',
+  LIMIT_FIELD_KEY: 'Field name too long',
+  LIMIT_FIELD_VALUE: 'Field value too long',
+  LIMIT_FIELD_COUNT: 'Too many fields',
+};
+
+/**
+ * Helper function to get Multer error message
+ */
+const getMulterErrorMessage = (code: string): string => {
+  return MULTER_ERROR_MESSAGES[code] ?? 'File upload error';
+};
+
+/**
  * Error handler for multer errors
  */
-export const handleMulterError = (error: Error, req: Request, res: Response, next: NextFunction): void => {
+export const handleMulterError = (
+  error: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void => {
   if (error instanceof multer.MulterError) {
     let message = 'File upload error';
-    let statusCode = 400;
+    const statusCode = 400;
 
-    switch (error.code) {
-      case 'LIMIT_FILE_SIZE':
-        message = 'File too large';
-        break;
-      case 'LIMIT_FILE_COUNT':
-        message = 'Too many files';
-        break;
-      case 'LIMIT_UNEXPECTED_FILE':
-        message = 'Unexpected file field';
-        break;
-      case 'LIMIT_PART_COUNT':
-        message = 'Too many parts';
-        break;
-      case 'LIMIT_FIELD_KEY':
-        message = 'Field name too long';
-        break;
-      case 'LIMIT_FIELD_VALUE':
-        message = 'Field value too long';
-        break;
-      case 'LIMIT_FIELD_COUNT':
-        message = 'Too many fields';
-        break;
-      default:
-        message = 'File upload error';
-    }
+    message = getMulterErrorMessage(error.code);
 
     logger.error('Multer error', { error: error.message, code: error.code });
 

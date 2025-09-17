@@ -25,6 +25,31 @@ export interface UploadResponse {
   errors?: string[];
 }
 
+export interface UnifiedUploadResponse {
+  success: boolean;
+  message: string;
+  data: {
+    files?: Array<{
+      fileId: string;
+      fileName: string;
+      fileSize: number;
+      processingStatus: 'pending' | 'processing' | 'completed' | 'failed' | 'skipped';
+    }>;
+    text?: {
+      content: string;
+      length: number;
+      processed: boolean;
+    };
+  };
+  summary: {
+    totalFiles: number;
+    totalTextLength: number;
+    hasFiles: boolean;
+    hasText: boolean;
+  };
+  errors?: string[];
+}
+
 export interface PythonServiceResponse {
   success: boolean;
   message: string;

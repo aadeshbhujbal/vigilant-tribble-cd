@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import type { MiddlewareConfig, Environment, EnvironmentValidation } from '../types/environment';
 
 // Dynamically load the appropriate .env file based on NODE_ENV
-const env = (process.env.NODE_ENV || 'development') as Environment;
+const env = (process.env.NODE_ENV ?? 'development') as Environment;
 const envFile = `.env.${env}`;
 const envPath = path.resolve(process.cwd(), envFile);
 
@@ -19,7 +19,7 @@ const parseCommaSeparated = (value: string | undefined, defaultValue: string[] =
 };
 
 // Helper function to parse boolean values
-const parseBoolean = (value: string | undefined, defaultValue: boolean = false): boolean => {
+const parseBoolean = (value: string | undefined, defaultValue = false): boolean => {
   if (!value) return defaultValue;
   return value.toLowerCase() === 'true' || value === '1';
 };
@@ -31,44 +31,58 @@ const parseNumber = (value: string | undefined, defaultValue: number): number =>
   return isNaN(parsed) ? defaultValue : parsed;
 };
 
-// Environment validation
-const validateEnvironment = (): EnvironmentValidation => {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-
-  // Required environment variables
+// Helper function to validate required environment variables
+const validateRequiredVars = (errors: string[]): void => {
   const requiredVars = ['NODE_ENV', 'PORT'];
   requiredVars.forEach(varName => {
     if (!process.env[varName]) {
       errors.push(`Required environment variable ${varName} is not set`);
     }
   });
+};
 
-  // Validate NODE_ENV
+// Helper function to validate NODE_ENV
+const validateNodeEnv = (errors: string[]): void => {
   const validEnvs: Environment[] = ['development', 'staging', 'production'];
   if (process.env.NODE_ENV && !validEnvs.includes(process.env.NODE_ENV as Environment)) {
     errors.push(
       `Invalid NODE_ENV: ${process.env.NODE_ENV}. Must be one of: ${validEnvs.join(', ')}`,
     );
   }
+};
 
-  // Validate PORT
+// Helper function to validate PORT
+const validatePort = (errors: string[]): void => {
   const port = parseNumber(process.env.PORT, 3000);
   if (port < 1 || port > 65535) {
     errors.push(`Invalid PORT: ${port}. Must be between 1 and 65535`);
   }
+};
 
-  // Production-specific validations
+// Helper function to validate production-specific settings
+const validateProductionSettings = (warnings: string[]): void => {
+  if (process.env.ENABLE_DEBUG_ENDPOINTS === 'true') {
+    warnings.push('Debug endpoints are enabled in production environment');
+  }
+  if (process.env.ENABLE_SWAGGER === 'true') {
+    warnings.push('Swagger documentation is enabled in production environment');
+  }
+  if (!process.env.CORS_ORIGINS || process.env.CORS_ORIGINS.includes('localhost')) {
+    warnings.push('CORS origins include localhost in production environment');
+  }
+};
+
+// Environment validation
+const validateEnvironment = (): EnvironmentValidation => {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  validateRequiredVars(errors);
+  validateNodeEnv(errors);
+  validatePort(errors);
+
   if (env === 'production') {
-    if (process.env.ENABLE_DEBUG_ENDPOINTS === 'true') {
-      warnings.push('Debug endpoints are enabled in production environment');
-    }
-    if (process.env.ENABLE_SWAGGER === 'true') {
-      warnings.push('Swagger documentation is enabled in production environment');
-    }
-    if (!process.env.CORS_ORIGINS || process.env.CORS_ORIGINS.includes('localhost')) {
-      warnings.push('CORS origins include localhost in production environment');
-    }
+    validateProductionSettings(warnings);
   }
 
   return {
@@ -83,7 +97,7 @@ const config: MiddlewareConfig = {
   // Core settings
   environment: env,
   port: parseNumber(process.env.PORT, 3000),
-  host: process.env.HOST || 'localhost',
+  host: process.env.HOST ?? 'localhost',
   nodeTlsRejectUnauthorized: process.env.NODE_TLS_REJECT_UNAUTHORIZED !== '0',
 
   // Feature flags
@@ -119,8 +133,8 @@ const config: MiddlewareConfig = {
       (env === 'development' ? 'debug' : 'info'),
     enableConsole: parseBoolean(process.env.LOG_ENABLE_CONSOLE, env === 'development'),
     enableFile: parseBoolean(process.env.LOG_ENABLE_FILE, true),
-    logDirectory: process.env.LOG_DIRECTORY || './logs',
-    maxFileSize: process.env.LOG_MAX_FILE_SIZE || '10m',
+    logDirectory: process.env.LOG_DIRECTORY ?? './logs',
+    maxFileSize: process.env.LOG_MAX_FILE_SIZE ?? '10m',
     maxFiles: parseNumber(process.env.LOG_MAX_FILES, 5),
     enableRequestLogging: parseBoolean(
       process.env.LOG_ENABLE_REQUEST_LOGGING,
@@ -132,16 +146,16 @@ const config: MiddlewareConfig = {
   // Swagger configuration
   swagger: {
     enabled: parseBoolean(process.env.ENABLE_SWAGGER, env === 'development'),
-    title: process.env.APP_NAME || 'clima-risk-validator-service',
+    title: process.env.APP_NAME ?? 'clima-risk-validator-service',
     description: 'clima-risk-validator-service CDF',
-    version: process.env.APP_VERSION || '1.0.0',
+    version: process.env.APP_VERSION ?? '1.0.0',
     servers: [
       {
-        url: `http${parseBoolean(process.env.ENABLE_HTTPS, env === 'production') ? 's' : ''}://${process.env.HOST || 'localhost'}:${parseNumber(process.env.PORT, 3000)}`,
+        url: `http${parseBoolean(process.env.ENABLE_HTTPS, env === 'production') ? 's' : ''}://${process.env.HOST ?? 'localhost'}:${parseNumber(process.env.PORT, 3000)}`,
         description: `${env} server`,
       },
     ],
-    basePath: process.env.API_PREFIX || '/api',
+    basePath: process.env.API_PREFIX ?? '/api',
   },
 
   // File upload configuration
@@ -179,10 +193,10 @@ const config: MiddlewareConfig = {
   },
 
   // Application specific
-  appName: process.env.APP_NAME || 'clima-risk-validator-service',
-  appVersion: process.env.APP_VERSION || '1.0.0',
-  apiPrefix: process.env.API_PREFIX || '/api',
-  maxRequestSize: process.env.MAX_REQUEST_SIZE || '1mb',
+  appName: process.env.APP_NAME ?? 'clima-risk-validator-service',
+  appVersion: process.env.APP_VERSION ?? '1.0.0',
+  apiPrefix: process.env.API_PREFIX ?? '/api',
+  maxRequestSize: process.env.MAX_REQUEST_SIZE ?? '1mb',
   requestTimeout: parseNumber(process.env.REQUEST_TIMEOUT, 30000),
 
   // Service integration

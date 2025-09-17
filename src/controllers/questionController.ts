@@ -4,15 +4,46 @@ import { climateAnswers, climateQuestions } from '../data';
 import type { Question } from '../types/question';
 
 /**
+ * Helper function to get answer for a question
+ */
+const getAnswerForQuestion = (questionId: string) => {
+  return climateAnswers.find(a => a.id === questionId);
+};
+
+/**
+ * Helper function to get answer text
+ */
+const getAnswerText = (answer: { answer?: string } | undefined): string => {
+  return answer?.answer ?? 'No answer available';
+};
+
+/**
+ * Helper function to get citation text
+ */
+const getCitationText = (answer: { citation?: string } | undefined): string => {
+  return answer?.citation ?? 'No citation available';
+};
+
+/**
+ * Helper function to get explanation text
+ */
+const getExplanationText = (
+  answer: { explanation?: string } | undefined,
+  question: Question,
+): string => {
+  return answer?.explanation ?? question.helpText ?? 'No explanation available';
+};
+
+/**
  * Helper function to combine question with its answer
  */
 const combineQuestionWithAnswer = (question: Question) => {
-  const answer = climateAnswers.find(a => a.questionId === question.id);
+  const answer = getAnswerForQuestion(question.id);
   return {
     question: question.question,
-    answer: answer?.response || 'No answer available',
-    citation: answer?.citations || [],
-    explanation: question.helpText || 'No explanation available',
+    answer: getAnswerText(answer),
+    citation: getCitationText(answer),
+    explanation: getExplanationText(answer, question),
   };
 };
 
@@ -50,7 +81,7 @@ const validateQuestionInput = (question: unknown): string | null => {
  */
 const createNewQuestion = (question: string, explanation?: string): Question => {
   const newId = `q${climateQuestions.length + 1}`;
-  const helpText = explanation?.trim() || 'No explanation provided';
+  const helpText = explanation?.trim() ?? 'No explanation provided';
 
   return {
     id: newId,
@@ -58,7 +89,7 @@ const createNewQuestion = (question: string, explanation?: string): Question => 
     category: 'User Submitted',
     subcategory: 'General',
     required: false,
-    helpText: helpText, // Now TypeScript knows this is definitely a string
+    helpText, // Now TypeScript knows this is definitely a string
   };
 };
 
@@ -117,6 +148,34 @@ export const getQuestionById = (req: Request, res: Response): void => {
 };
 
 /**
+ * Helper function to handle validation error response
+ */
+const handleValidationError = (res: Response, validationError: string): void => {
+  res.status(400).json({
+    success: false,
+    error: 'Validation error',
+    message: validationError,
+  });
+};
+
+/**
+ * Helper function to handle successful question submission
+ */
+const handleSuccessfulSubmission = (res: Response, newQuestion: Question): void => {
+  logger.info(`New question submitted: ${newQuestion.id}`);
+  res.status(201).json({
+    success: true,
+    message: 'Question submitted successfully',
+    data: {
+      id: newQuestion.id,
+      question: newQuestion.question,
+      explanation: newQuestion.helpText,
+      submittedAt: new Date().toISOString(),
+    },
+  });
+};
+
+/**
  * Submit a new question
  */
 export const submitQuestion = (req: Request, res: Response): void => {
@@ -125,31 +184,13 @@ export const submitQuestion = (req: Request, res: Response): void => {
 
     const validationError = validateQuestionInput(question);
     if (validationError) {
-      res.status(400).json({
-        success: false,
-        error: 'Validation error',
-        message: validationError,
-      });
+      handleValidationError(res, validationError);
       return;
     }
 
     const newQuestion = createNewQuestion(question, explanation);
-
-    // Type assertion to ensure compatibility
     (climateQuestions as Question[]).push(newQuestion);
-
-    logger.info(`New question submitted: ${newQuestion.id}`);
-
-    res.status(201).json({
-      success: true,
-      message: 'Question submitted successfully',
-      data: {
-        id: newQuestion.id,
-        question: newQuestion.question,
-        explanation: newQuestion.helpText,
-        submittedAt: new Date().toISOString(),
-      },
-    });
+    handleSuccessfulSubmission(res, newQuestion);
   } catch (error) {
     logger.error(`Error submitting question: ${error}`);
     res.status(500).json({

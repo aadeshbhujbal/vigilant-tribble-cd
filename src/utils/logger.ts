@@ -23,7 +23,7 @@ winston.addColors(colors);
 
 // Define which level to log based on environment
 const level = (): string => {
-  const env = process.env.NODE_ENV || 'development';
+  const env = process.env.NODE_ENV ?? 'development';
   const isDevelopment = env === 'development';
   return isDevelopment ? 'debug' : 'warn';
 };

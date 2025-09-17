@@ -58,7 +58,7 @@ if (config.logging.enableRequestLogging) {
 // CORS configuration
 if (config.enableCors) {
   const corsOptions: CorsOptions = {
-    origin: function (
+    origin(
       origin: string | undefined,
       callback: (_err: Error | null, _allow?: boolean) => void,
     ): void {
@@ -115,7 +115,7 @@ if (config.enableDebugEndpoints) {
       port: config.port,
       host: config.host,
       nodeTlsRejectUnauthorized: config.nodeTlsRejectUnauthorized,
-      validation: validation,
+      validation,
       config: {
         enableDebugEndpoints: config.enableDebugEndpoints,
         enableSwagger: config.enableSwagger,
@@ -151,9 +151,8 @@ app.use((err: Error, req: Request, res: Response, _next: NextFunction): void => 
   });
 });
 
-app.listen(config.port, config.host, (): void => {
-  const isDevelopment = config.environment === 'development';
-
+// Helper function to log startup information
+const logStartupInfo = (isDevelopment: boolean): void => {
   if (isDevelopment) {
     logger.info('🚀 Application started successfully!');
     logger.info(`📡 App started on port: ${config.port}`);
@@ -167,44 +166,69 @@ app.listen(config.port, config.host, (): void => {
     logger.info(`Environment: ${config.environment}`);
     logger.info(`Version: ${config.appVersion}`);
   }
+};
 
+// Helper function to log swagger endpoint
+const logSwaggerEndpoint = (isDevelopment: boolean, protocol: string): void => {
   if (config.enableSwagger) {
-    const protocol: string = config.security.enableHttps ? 'https' : 'http';
     const swaggerUrl = `${protocol}://${config.host}:${config.port}/api-docs`;
-    if (isDevelopment) {
-      logger.info(`📚 Swagger docs available at: ${swaggerUrl}`);
-    } else {
-      logger.info(`Swagger docs available at: ${swaggerUrl}`);
-    }
+    const message = isDevelopment
+      ? `📚 Swagger docs available at: ${swaggerUrl}`
+      : `Swagger docs available at: ${swaggerUrl}`;
+    logger.info(message);
   }
+};
 
+// Helper function to log debug endpoint
+const logDebugEndpoint = (isDevelopment: boolean, protocol: string): void => {
   if (config.enableDebugEndpoints) {
-    const protocol: string = config.security.enableHttps ? 'https' : 'http';
     const debugUrl = `${protocol}://${config.host}:${config.port}/debug/env`;
-    if (isDevelopment) {
-      logger.info(`🐛 Debug endpoint available at: ${debugUrl}`);
-    } else {
-      logger.info(`Debug endpoint available at: ${debugUrl}`);
-    }
+    const message = isDevelopment
+      ? `🐛 Debug endpoint available at: ${debugUrl}`
+      : `Debug endpoint available at: ${debugUrl}`;
+    logger.info(message);
   }
+};
 
+// Helper function to log file upload endpoint
+const logFileUploadEndpoint = (isDevelopment: boolean, protocol: string): void => {
   if (config.enableFileUpload) {
-    const protocol: string = config.security.enableHttps ? 'https' : 'http';
     const uploadUrl = `${protocol}://${config.host}:${config.port}${config.apiPrefix}/upload`;
     if (isDevelopment) {
-      logger.info(`📁 File upload endpoint available at: ${uploadUrl} (supports single or multiple files)`);
+      logger.info(
+        `📁 File upload endpoint available at: ${uploadUrl} (supports single or multiple files)`,
+      );
       logger.info(`📊 Max file size: ${Math.round(config.fileUpload.maxFileSize / 1024 / 1024)}MB`);
       logger.info(`📋 Allowed file types: ${config.fileUpload.allowedMimeTypes.join(', ')}`);
     } else {
       logger.info(`File upload endpoint available at: ${uploadUrl}`);
     }
   }
+};
 
-  // Log validation warnings if any
+// Helper function to log feature endpoints
+const logFeatureEndpoints = (isDevelopment: boolean): void => {
+  const protocol: string = config.security.enableHttps ? 'https' : 'http';
+
+  logSwaggerEndpoint(isDevelopment, protocol);
+  logDebugEndpoint(isDevelopment, protocol);
+  logFileUploadEndpoint(isDevelopment, protocol);
+};
+
+// Helper function to log validation warnings
+const logValidationWarnings = (): void => {
   if (validation.warnings.length > 0) {
     logger.warn('Environment validation warnings:');
     validation.warnings.forEach((warning: string) => {
       logger.warn(`  ⚠️  ${warning}`);
     });
   }
+};
+
+app.listen(config.port, config.host, (): void => {
+  const isDevelopment = config.environment === 'development';
+
+  logStartupInfo(isDevelopment);
+  logFeatureEndpoints(isDevelopment);
+  logValidationWarnings();
 });

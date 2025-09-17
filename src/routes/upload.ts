@@ -1,11 +1,17 @@
-import { Router } from 'express';
-import type { Request, Response, NextFunction } from 'express';
+import {
+  Router,
+  type Router as ExpressRouter,
+  type Request,
+  type Response,
+  type NextFunction,
+} from 'express';
 import { uploadFile, getUploadStatus } from '../controllers/uploadController';
 import { createMulterConfig, validateFile, handleMulterError } from '../middleware/upload';
 import config from '../config';
 import logger from '../utils/logger';
 
-const router = Router();
+// eslint-disable-next-line new-cap
+const router: ExpressRouter = Router();
 
 // Create multer configuration
 const upload = createMulterConfig(config.fileUpload);
@@ -104,11 +110,12 @@ const fileValidation = validateFile(config.fileUpload);
  *       500:
  *         description: Internal server error
  */
-router.post('/',
+router.post(
+  '/',
   upload.array('files', config.fileUpload.maxFiles),
   handleMulterError,
   fileValidation,
-  uploadFile
+  uploadFile,
 );
 
 /**
@@ -159,7 +166,7 @@ router.get('/status/:fileId', getUploadStatus);
 // Note: Upload health check is integrated into the main health endpoint at /api/health
 
 // Error handling middleware for upload routes
-router.use((error: Error, req: Request, res: Response, next: NextFunction): void => {
+router.use((error: Error, req: Request, res: Response, _next: NextFunction): void => {
   logger.error('Upload route error', {
     error: error.message,
     stack: error.stack,

@@ -1,7 +1,8 @@
-import { Router } from 'express';
+import { Router, type Router as ExpressRouter } from 'express';
 import { healthCheck, statusCheck } from '../controllers/healthController';
 
-const router = Router();
+// eslint-disable-next-line new-cap
+const router: ExpressRouter = Router();
 
 /**
  * @swagger
