@@ -7,6 +7,7 @@ import {
 } from 'express';
 import { uploadFile, getUploadStatus } from '../controllers/uploadController';
 import { createMulterConfig, validateFile, handleMulterError } from '../middleware/upload';
+import { validateClimateDocument } from '../middleware/climateValidation';
 import config from '../config';
 import logger from '../utils/logger';
 
@@ -19,14 +20,17 @@ const upload = createMulterConfig(config.fileUpload);
 // File validation middleware
 const fileValidation = validateFile(config.fileUpload);
 
+// Climate document validation middleware
+const climateValidation = validateClimateDocument(config.climateValidation);
+
 // Single file upload endpoint removed - use /multiple endpoint for all uploads
 
 /**
  * @swagger
  * /api/upload:
  *   post:
- *     summary: Upload files for climate risk analysis
- *     description: Upload one or more files to be processed by the Python service for climate risk validation
+ *     summary: Upload climate risk documents for analysis
+ *     description: Upload climate risk documents (.pdf, .csv, .txt, .docx, .xlsx) with basic validation before processing by Python service
  *     tags: [File Upload]
  *     security:
  *       - bearerAuth: []
@@ -42,7 +46,7 @@ const fileValidation = validateFile(config.fileUpload);
  *                 items:
  *                   type: string
  *                   format: binary
- *                 description: Files to upload (PDF, Excel, CSV, JSON, images) - can be single or multiple files
+ *                 description: Climate risk documents to upload (.pdf, .csv, .txt, .docx, .xlsx) - can be single or multiple files
  *             required:
  *               - files
  *     responses:
@@ -115,6 +119,7 @@ router.post(
   upload.array('files', config.fileUpload.maxFiles),
   handleMulterError,
   fileValidation,
+  climateValidation,
   uploadFile,
 );
 

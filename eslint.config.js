@@ -92,6 +92,10 @@ module.exports = [
       'no-alert': 'warn',
       'no-console': 'off', // Allow console in development
       'no-debugger': 'warn',
+      'no-unsafe-regex': 'error',
+      'no-control-regex': 'error',
+      'no-regex-spaces': 'error',
+      'no-invalid-regexp': 'error',
 
       // Code quality rules
       'no-var': 'error',
@@ -154,7 +158,13 @@ module.exports = [
       '@typescript-eslint/prefer-literal-enum-member': 'warn',
       '@typescript-eslint/prefer-namespace-keyword': 'warn',
       '@typescript-eslint/triple-slash-reference': 'warn',
-      '@typescript-eslint/unified-signatures': 'warn'
+      '@typescript-eslint/unified-signatures': 'warn',
+
+      // Additional security rules for file handling
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-call': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
+      '@typescript-eslint/no-unsafe-return': 'warn'
     }
   },
   {

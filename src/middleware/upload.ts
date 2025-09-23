@@ -12,11 +12,10 @@ const extractFilesFromRequest = (req: Request): Express.Multer.File[] => {
 
   if (req.files) {
     if (Array.isArray(req.files)) {
-      const { files: reqFiles } = req;
-      files = reqFiles;
+      files = req.files;
     } else {
       // Handle multiple files with different field names
-      const { files: fileValues } = req;
+      const fileValues = req.files as Record<string, Express.Multer.File[]>;
       files = Object.values(fileValues).flat();
     }
   } else if (req.file) {
@@ -205,18 +204,39 @@ const getFileExtension = (filename: string): string => {
 };
 
 /**
+ * Suspicious file extensions that could be dangerous
+ */
+const DANGEROUS_EXTENSIONS = [
+  'exe', 'bat', 'cmd', 'com', 'scr', 'pif', 'vbs', 'js', 'jar', 'php', 'asp', 'aspx', 'jsp',
+  'sh', 'bash', 'zsh', 'fish', 'ps1', 'psm1',
+  'sql', 'db', 'sqlite', 'sqlite3',
+  'log', 'tmp', 'temp', 'bak', 'backup'
+] as const;
+
+/**
  * Check if filename is suspicious
  */
 const isSuspiciousFileName = (filename: string): boolean => {
+  // Check for dangerous file extensions
+  const fileExtension = getFileExtension(filename).toLowerCase();
+  const hasDangerousExtension = DANGEROUS_EXTENSIONS.some(ext =>
+    fileExtension === `.${ext}`
+  );
+
+  if (hasDangerousExtension) {
+    return true;
+  }
+
+  // Check for suspicious patterns
   const suspiciousPatterns = [
-    /\.(exe|bat|cmd|com|scr|pif|vbs|js|jar|php|asp|aspx|jsp)$/i,
-    /\.(sh|bash|zsh|fish|ps1|psm1)$/i,
-    /\.(sql|db|sqlite|sqlite3)$/i,
-    /\.(log|tmp|temp|bak|backup)$/i,
     /^\./, // Hidden files
     /[<>:"|?*]/, // Invalid characters
     /\.{2,}/, // Multiple dots
     /^\.+$/, // Only dots
+    /\.(exe|bat|cmd|com|scr|pif|vbs|js|jar|php|asp|aspx|jsp)$/i,
+    /\.(sh|bash|zsh|fish|ps1|psm1)$/i,
+    /\.(sql|db|sqlite|sqlite3)$/i,
+    /\.(log|tmp|temp|bak|backup)$/i,
   ];
 
   return suspiciousPatterns.some(pattern => pattern.test(filename));
@@ -289,12 +309,15 @@ export const handleMulterError = (
   next: NextFunction,
 ): void => {
   if (error instanceof multer.MulterError) {
-    let message = 'File upload error';
+    const message = getMulterErrorMessage(error.code);
     const statusCode = 400;
 
-    message = getMulterErrorMessage(error.code);
-
-    logger.error('Multer error', { error: error.message, code: error.code });
+    logger.error('Multer error', {
+      error: error.message,
+      code: error.code,
+      field: error.field,
+      files: req.files ? 'present' : 'none'
+    });
 
     res.status(statusCode).json({
       success: false,
