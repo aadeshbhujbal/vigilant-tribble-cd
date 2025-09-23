@@ -2,6 +2,8 @@
  * Environment configuration types and interfaces for middleware service
  */
 
+import type { ClimateFileValidationConfig } from './climateValidation';
+
 export type Environment = 'development' | 'staging' | 'production';
 
 export interface SecurityConfig {
@@ -71,6 +73,7 @@ export interface MiddlewareConfig {
   logging: LoggingConfig;
   swagger: SwaggerConfig;
   fileUpload: FileUploadConfig;
+  climateValidation: ClimateFileValidationConfig;
 
   // Application specific
   appName: string;

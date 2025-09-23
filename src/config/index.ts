@@ -1,6 +1,7 @@
 import path from 'path';
 import dotenv from 'dotenv';
 import type { MiddlewareConfig, Environment, EnvironmentValidation } from '../types/environment';
+import type { ClimateFileValidationConfig } from '../types/climateValidation';
 
 // Dynamically load the appropriate .env file based on NODE_ENV
 const env = (process.env.NODE_ENV ?? 'development') as Environment;
@@ -166,6 +167,7 @@ const config: MiddlewareConfig = {
       'application/pdf',
       'application/vnd.ms-excel',
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       'text/csv',
       'application/json',
       'text/plain',
@@ -177,6 +179,7 @@ const config: MiddlewareConfig = {
       '.pdf',
       '.xls',
       '.xlsx',
+      '.docx',
       '.csv',
       '.json',
       '.txt',
@@ -191,6 +194,31 @@ const config: MiddlewareConfig = {
     enableMalwareScan: parseBoolean(process.env.FILE_UPLOAD_ENABLE_MALWARE_SCAN, false),
     pythonServiceUrl: process.env.PYTHON_SERVICE_URL,
   },
+
+  // Climate document validation configuration - simplified for middleware
+  climateValidation: {
+    // Basic file validation
+    pdfValidation: {
+      enabled: parseBoolean(process.env.CLIMATE_PDF_VALIDATION_ENABLED, true),
+      maxFileSize: parseNumber(process.env.CLIMATE_PDF_MAX_SIZE, 100 * 1024 * 1024), // 100MB
+    },
+    csvValidation: {
+      enabled: parseBoolean(process.env.CLIMATE_CSV_VALIDATION_ENABLED, true),
+      maxFileSize: parseNumber(process.env.CLIMATE_CSV_MAX_SIZE, 50 * 1024 * 1024), // 50MB
+    },
+    txtValidation: {
+      enabled: parseBoolean(process.env.CLIMATE_TXT_VALIDATION_ENABLED, true),
+      maxFileSize: parseNumber(process.env.CLIMATE_TXT_MAX_SIZE, 10 * 1024 * 1024), // 10MB
+    },
+    docxValidation: {
+      enabled: parseBoolean(process.env.CLIMATE_DOCX_VALIDATION_ENABLED, true),
+      maxFileSize: parseNumber(process.env.CLIMATE_DOCX_MAX_SIZE, 50 * 1024 * 1024), // 50MB
+    },
+    xlsxValidation: {
+      enabled: parseBoolean(process.env.CLIMATE_XLSX_VALIDATION_ENABLED, true),
+      maxFileSize: parseNumber(process.env.CLIMATE_XLSX_MAX_SIZE, 50 * 1024 * 1024), // 50MB
+    },
+  } as ClimateFileValidationConfig,
 
   // Application specific
   appName: process.env.APP_NAME ?? 'clima-risk-validator-service',

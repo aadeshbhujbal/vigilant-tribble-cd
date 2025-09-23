@@ -12,6 +12,9 @@ A Node.js middleware service for climate risk validation and question management
 - **CORS configuration** for cross-origin requests
 - **TypeScript** with strict type checking
 - **Environment validation** on startup
+- **Climate document validation** for file uploads (.pdf, .csv, .txt, .docx, .xlsx)
+- **File upload middleware** with basic structure validation
+- **Python backend integration** for comprehensive document analysis
 
 ## 📋 Prerequisites
 
@@ -155,6 +158,10 @@ npm run type-check
 - `GET /api/questions/:id` - Get specific question by ID
 - `POST /api/questions` - Submit a new question
 
+### File Upload
+- `POST /api/upload` - Upload climate risk documents (.pdf, .csv, .txt, .docx, .xlsx)
+- `GET /api/upload/status/:fileId` - Get upload processing status
+
 ### Documentation
 - `GET /api-docs` - Swagger API documentation (development/staging only)
 
@@ -215,6 +222,26 @@ The application supports comprehensive configuration through environment variabl
 - `RETRY_ATTEMPTS` - Number of retry attempts
 - `RETRY_DELAY` - Delay between retry attempts
 
+### File Upload Configuration
+- `ENABLE_FILE_UPLOAD` - Enable file upload functionality
+- `FILE_UPLOAD_MAX_SIZE` - Maximum file size for uploads
+- `FILE_UPLOAD_MAX_FILES` - Maximum number of files per upload
+- `FILE_UPLOAD_TIMEOUT` - Upload timeout in milliseconds
+- `FILE_UPLOAD_ENABLE_VALIDATION` - Enable file validation
+- `FILE_UPLOAD_ENABLE_MALWARE_SCAN` - Enable malware scanning
+
+### Climate Document Validation
+- `CLIMATE_PDF_VALIDATION_ENABLED` - Enable PDF validation
+- `CLIMATE_PDF_MAX_SIZE` - Maximum PDF file size
+- `CLIMATE_CSV_VALIDATION_ENABLED` - Enable CSV validation
+- `CLIMATE_CSV_MAX_SIZE` - Maximum CSV file size
+- `CLIMATE_TXT_VALIDATION_ENABLED` - Enable TXT validation
+- `CLIMATE_TXT_MAX_SIZE` - Maximum TXT file size
+- `CLIMATE_DOCX_VALIDATION_ENABLED` - Enable DOCX validation
+- `CLIMATE_DOCX_MAX_SIZE` - Maximum DOCX file size
+- `CLIMATE_XLSX_VALIDATION_ENABLED` - Enable XLSX validation
+- `CLIMATE_XLSX_MAX_SIZE` - Maximum XLSX file size
+
 ## 🏗️ Project Structure
 
 ```
@@ -222,10 +249,38 @@ src/
 ├── config/           # Configuration management
 ├── controllers/      # Request handlers
 ├── data/            # Demo data and data management
+├── middleware/      # Custom middleware (upload, validation)
 ├── routes/          # API route definitions
 ├── types/           # TypeScript type definitions
 ├── utils/           # Utility functions (logging, etc.)
 └── index.ts         # Application entry point
+```
+
+## 📄 Climate Document Validation
+
+The service includes middleware for validating climate risk documents before forwarding them to the Python backend for comprehensive analysis.
+
+### Supported File Types
+- **PDF** (.pdf) - Climate reports, assessments, disclosures
+- **CSV** (.csv) - Emissions data, metrics, datasets
+- **TXT** (.txt) - Climate-related text documents
+- **DOCX** (.docx) - Word documents with climate content
+- **XLSX** (.xlsx) - Excel spreadsheets with climate data
+
+### Validation Features
+- **File structure validation** - Ensures files are properly formatted
+- **File size limits** - Configurable size limits per file type
+- **Password protection detection** - Rejects password-protected files
+- **Basic content validation** - Checks for empty or corrupted files
+- **Error handling** - Clear error messages for validation failures
+
+### API Usage
+```bash
+# Upload climate documents
+curl -X POST http://localhost:3000/api/upload \
+  -H "Content-Type: multipart/form-data" \
+  -F "files=@climate-report.pdf" \
+  -F "files=@emissions-data.csv"
 ```
 
 ## 🔒 Security Features
@@ -235,6 +290,7 @@ src/
 - **Environment validation** on startup
 - **HTTPS support** for production
 - **Request size limits** to prevent DoS attacks
+- **File validation** to prevent malicious uploads
 - **Comprehensive logging** for security monitoring
 
 ## 📊 Monitoring
