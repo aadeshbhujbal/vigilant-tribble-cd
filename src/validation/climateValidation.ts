@@ -103,28 +103,55 @@ const checkRequestHasFiles = (req: Request, res: Response): boolean => {
 /**
  * Process validation results
  */
-const processValidationResults = (
-  validationResults: ClimateValidationResult[],
-  files: Express.Multer.File[],
-  res: Response,
-  req: Request,
-  next: NextFunction,
-): void => {
-  const hasErrors = validationResults.some(result => !result.isValid);
-  const hasWarnings = validationResults.some(result => result.warnings.length > 0);
+const processValidationResults = (context: {
+  validationResults: ClimateValidationResult[];
+  files: Express.Multer.File[];
+  res: Response;
+  req: Request;
+  next: NextFunction;
+}): void => {
+  const { validationResults, files, res } = context;
 
-  if (hasErrors) {
+  if (hasValidationErrors(validationResults)) {
     handleValidationErrors(res, validationResults, files);
     return;
   }
 
-  if (hasWarnings) {
+  handleValidationSuccess(context);
+};
+
+/**
+ * Check if validation has errors
+ */
+const hasValidationErrors = (validationResults: ClimateValidationResult[]): boolean => {
+  return validationResults.some(result => !result.isValid);
+};
+
+/**
+ * Handle successful validation
+ */
+const handleValidationSuccess = (context: {
+  validationResults: ClimateValidationResult[];
+  files: Express.Multer.File[];
+  req: Request;
+  next: NextFunction;
+}): void => {
+  const { validationResults, files, req, next } = context;
+
+  if (hasValidationWarnings(validationResults)) {
     logValidationWarnings(validationResults, files);
   }
 
   // Attach validation results to request for use in controllers
   req.climateValidationResults = validationResults;
   next();
+};
+
+/**
+ * Check if validation has warnings
+ */
+const hasValidationWarnings = (validationResults: ClimateValidationResult[]): boolean => {
+  return validationResults.some(result => result.warnings.length > 0);
 };
 
 /**
@@ -139,7 +166,7 @@ export const validateClimateDocument = (config: ClimateFileValidationConfig) => 
 
       const files = extractFilesFromRequest(req);
       const validationResults = await validateAllFiles(files, config);
-      processValidationResults(validationResults, files, res, req, next);
+      processValidationResults({ validationResults, files, res, req, next });
     } catch (error) {
       logger.error('Climate document validation error', {
         error: error instanceof Error ? error.message : 'Unknown error',

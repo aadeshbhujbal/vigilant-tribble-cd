@@ -49,9 +49,25 @@ const getFilesToProcess = (
   file: Express.Multer.File | undefined,
 ): Express.Multer.File[] => {
   if (!files) {
-    return file ? [file] : [];
+    return getSingleFileAsArray(file);
   }
 
+  return extractFilesFromFilesParameter(files);
+};
+
+/**
+ * Get single file as array or empty array
+ */
+const getSingleFileAsArray = (file: Express.Multer.File | undefined): Express.Multer.File[] => {
+  return file ? [file] : [];
+};
+
+/**
+ * Extract files from files parameter (array or object)
+ */
+const extractFilesFromFilesParameter = (
+  files: Express.Multer.File | Express.Multer.File[] | Record<string, Express.Multer.File[]>,
+): Express.Multer.File[] => {
   if (Array.isArray(files)) {
     return files;
   }
@@ -95,13 +111,29 @@ export const getFileCounts = (results: UploadResponse[]) => {
  * Helper function to build success message
  */
 export const buildSuccessMessage = (processedFiles: number, skippedFiles: number): string => {
-  if (processedFiles > 0 && skippedFiles > 0) {
-    return `All files uploaded successfully (${processedFiles} processed, ${skippedFiles} skipped - Python service not configured)`;
-  } else if (processedFiles > 0) {
-    return 'All files uploaded and processed successfully';
-  } else {
-    return 'All files uploaded successfully (Python service not configured - processing skipped)';
+  if (hasBothProcessedAndSkipped(processedFiles, skippedFiles)) {
+    return buildMixedProcessingMessage(processedFiles, skippedFiles);
   }
+
+  if (processedFiles > 0) {
+    return 'All files uploaded and processed successfully';
+  }
+
+  return 'All files uploaded successfully (Python service not configured - processing skipped)';
+};
+
+/**
+ * Check if both processed and skipped files exist
+ */
+const hasBothProcessedAndSkipped = (processedFiles: number, skippedFiles: number): boolean => {
+  return processedFiles > 0 && skippedFiles > 0;
+};
+
+/**
+ * Build message for mixed processing results
+ */
+const buildMixedProcessingMessage = (processedFiles: number, skippedFiles: number): string => {
+  return `All files uploaded successfully (${processedFiles} processed, ${skippedFiles} skipped - Python service not configured)`;
 };
 
 /**

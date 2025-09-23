@@ -62,12 +62,33 @@ const validatePort = (errors: string[]): void => {
 
 // Helper function to validate production-specific settings
 const validateProductionSettings = (warnings: string[]): void => {
+  checkDebugEndpointsInProduction(warnings);
+  checkSwaggerInProduction(warnings);
+  checkCorsOriginsInProduction(warnings);
+};
+
+/**
+ * Check if debug endpoints are enabled in production
+ */
+const checkDebugEndpointsInProduction = (warnings: string[]): void => {
   if (process.env.ENABLE_DEBUG_ENDPOINTS === 'true') {
     warnings.push('Debug endpoints are enabled in production environment');
   }
+};
+
+/**
+ * Check if Swagger is enabled in production
+ */
+const checkSwaggerInProduction = (warnings: string[]): void => {
   if (process.env.ENABLE_SWAGGER === 'true') {
     warnings.push('Swagger documentation is enabled in production environment');
   }
+};
+
+/**
+ * Check CORS origins in production
+ */
+const checkCorsOriginsInProduction = (warnings: string[]): void => {
   if (!process.env.CORS_ORIGINS || process.env.CORS_ORIGINS.includes('localhost')) {
     warnings.push('CORS origins include localhost in production environment');
   }

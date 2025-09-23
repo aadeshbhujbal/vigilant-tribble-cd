@@ -5,21 +5,30 @@ import logger from '../utils/logger';
 import { getFileExtension, formatBytes, isSuspiciousFileName } from '../lib/fileUtils';
 
 export const extractFilesFromRequest = (req: Request): Express.Multer.File[] => {
-  let files: Express.Multer.File[] = [];
-
   if (req.files) {
-    if (Array.isArray(req.files)) {
-      const { files: reqFiles } = req;
-      files = reqFiles;
-    } else {
-      const fileValues = req.files as Record<string, Express.Multer.File[]>;
-      files = Object.values(fileValues).flat();
-    }
-  } else if (req.file) {
-    files = [req.file];
+    return extractFilesFromRequestFiles(req);
   }
 
-  return files;
+  return extractSingleFileFromRequest(req);
+};
+
+/**
+ * Extract files from req.files (array or object)
+ */
+const extractFilesFromRequestFiles = (req: Request): Express.Multer.File[] => {
+  if (Array.isArray(req.files)) {
+    return req.files;
+  }
+
+  const fileValues = req.files as Record<string, Express.Multer.File[]>;
+  return Object.values(fileValues).flat();
+};
+
+/**
+ * Extract single file from req.file
+ */
+const extractSingleFileFromRequest = (req: Request): Express.Multer.File[] => {
+  return req.file ? [req.file] : [];
 };
 
 const validateIndividualFile = (

@@ -24,26 +24,42 @@ const processFiles = async (validFiles: Express.Multer.File[]): Promise<UploadRe
   const results: UploadResponse[] = [];
 
   for (const file of validFiles) {
-    try {
-      const result = await processFile(file);
-      results.push(result);
-    } catch (error) {
-      logger.error('Error processing file', {
-        fileName: file.originalname,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
-
-      results.push({
-        success: false,
-        message: `Failed to process file: ${file.originalname}`,
-        fileName: file.originalname,
-        fileSize: file.size,
-        errors: [error instanceof Error ? error.message : 'Unknown error'],
-      });
-    }
+    const result = await processFileWithErrorHandling(file);
+    results.push(result);
   }
 
   return results;
+};
+
+/**
+ * Process individual file with error handling
+ */
+const processFileWithErrorHandling = async (file: Express.Multer.File): Promise<UploadResponse> => {
+  try {
+    return await processFile(file);
+  } catch (error) {
+    return handleFileProcessingError(file, error);
+  }
+};
+
+/**
+ * Handle file processing error
+ */
+const handleFileProcessingError = (file: Express.Multer.File, error: unknown): UploadResponse => {
+  const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+  logger.error('Error processing file', {
+    fileName: file.originalname,
+    error: errorMessage,
+  });
+
+  return {
+    success: false,
+    message: `Failed to process file: ${file.originalname}`,
+    fileName: file.originalname,
+    fileSize: file.size,
+    errors: [errorMessage],
+  };
 };
 
 export const uploadFile = async (

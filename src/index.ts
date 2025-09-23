@@ -55,31 +55,43 @@ if (config.logging.enableRequestLogging) {
   });
 }
 
+// Helper function to check development origin
+const isDevelopmentOriginAllowed = (origin: string): boolean => {
+  if (config.environment !== 'development') return false;
+
+  const serverOrigin = `http://${config.host}:${config.port}`;
+  return origin === serverOrigin;
+};
+
+// Helper function to handle CORS origin validation
+const createCorsOriginHandler = () => {
+  return (
+    origin: string | undefined,
+    callback: (_err: Error | null, _allow?: boolean) => void,
+  ): void => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    // Check if origin is allowed in development
+    if (isDevelopmentOriginAllowed(origin)) {
+      return callback(null, true);
+    }
+
+    // Check if origin is in allowed list
+    if (config.security.corsOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // Block origin
+    logger.warn(`CORS blocked origin: ${origin}`);
+    return callback(new Error('Not allowed by CORS'));
+  };
+};
+
 // CORS configuration
 if (config.enableCors) {
   const corsOptions: CorsOptions = {
-    origin(
-      origin: string | undefined,
-      callback: (_err: Error | null, _allow?: boolean) => void,
-    ): void {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-
-      // In development, allow same origin requests (for Swagger UI)
-      if (config.environment === 'development') {
-        const serverOrigin = `http://${config.host}:${config.port}`;
-        if (origin === serverOrigin) {
-          return callback(null, true);
-        }
-      }
-
-      if (config.security.corsOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        logger.warn(`CORS blocked origin: ${origin}`);
-        return callback(new Error('Not allowed by CORS'));
-      }
-    },
+    origin: createCorsOriginHandler(),
     credentials: config.security.credentials,
     methods: config.security.allowedMethods,
     allowedHeaders: config.security.allowedHeaders,

@@ -12,13 +12,8 @@ export { createMulterConfig, handleMulterError };
 
 export const validateFile = (config: FileUploadConfig) => {
   return (req: Request, res: Response, next: NextFunction): void => {
-    if (!req.file && !req.files) {
-      res.status(400).json({
-        success: false,
-        message: 'No file provided',
-        errors: ['File is required'],
-      });
-      return;
+    if (!hasFilesInRequest(req)) {
+      return sendNoFileError(res);
     }
 
     const files = extractFilesFromRequest(req);
@@ -29,10 +24,34 @@ export const validateFile = (config: FileUploadConfig) => {
       return;
     }
 
-    if (validationResult.warnings.length > 0) {
-      logValidationWarnings(validationResult.warnings, files);
-    }
-
+    handleValidationWarnings(validationResult.warnings, files);
     next();
   };
+};
+
+/**
+ * Check if request has files
+ */
+const hasFilesInRequest = (req: Request): boolean => {
+  return !!(req.file ?? req.files);
+};
+
+/**
+ * Send no file error response
+ */
+const sendNoFileError = (res: Response): void => {
+  res.status(400).json({
+    success: false,
+    message: 'No file provided',
+    errors: ['File is required'],
+  });
+};
+
+/**
+ * Handle validation warnings
+ */
+const handleValidationWarnings = (warnings: string[], files: Express.Multer.File[]): void => {
+  if (warnings.length > 0) {
+    logValidationWarnings(warnings, files);
+  }
 };

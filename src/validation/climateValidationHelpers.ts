@@ -194,12 +194,28 @@ export const getMaxSizeForFileType = (
  * Check if file has suspicious characteristics
  */
 export const isSuspiciousClimateFile = (file: Express.Multer.File): boolean => {
+  const fileName = file.originalname.toLowerCase();
+
+  return hasSuspiciousExtension(fileName) || hasSuspiciousName(fileName);
+};
+
+/**
+ * Check if file has suspicious extension patterns
+ */
+const hasSuspiciousExtension = (fileName: string): boolean => {
   const suspiciousPatterns = [
     /\.(exe|bat|cmd|com|scr|pif|vbs|js|jar|php|asp|aspx|jsp)$/i,
     /\.(sh|bash|zsh|fish|ps1|psm1)$/i,
     /\.(py|rb|pl|go|rs|cpp|c|h)$/i,
   ];
 
+  return suspiciousPatterns.some(pattern => pattern.test(fileName));
+};
+
+/**
+ * Check if file has suspicious name patterns
+ */
+const hasSuspiciousName = (fileName: string): boolean => {
   const suspiciousNames = [
     'malware',
     'virus',
@@ -212,11 +228,7 @@ export const isSuspiciousClimateFile = (file: Express.Multer.File): boolean => {
     'ransomware',
   ];
 
-  const fileName = file.originalname.toLowerCase();
-  const hasSuspiciousExtension = suspiciousPatterns.some(pattern => pattern.test(fileName));
-  const hasSuspiciousName = suspiciousNames.some(name => fileName.includes(name));
-
-  return hasSuspiciousExtension || hasSuspiciousName;
+  return suspiciousNames.some(name => fileName.includes(name));
 };
 
 /**

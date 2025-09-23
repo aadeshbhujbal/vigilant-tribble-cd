@@ -15,12 +15,25 @@ export const formatBytes = (bytes: number): string => {
 
 export const isSuspiciousFileName = (filename: string): boolean => {
   const fileExtension = getFileExtension(filename).toLowerCase();
-  const hasDangerousExtension = DANGEROUS_EXTENSIONS.some(
-    (ext: string) => fileExtension === `.${ext}`,
-  );
 
-  if (hasDangerousExtension) return true;
+  if (hasDangerousExtension(fileExtension)) {
+    return true;
+  }
 
+  return hasSuspiciousPattern(filename);
+};
+
+/**
+ * Check if file has dangerous extension
+ */
+const hasDangerousExtension = (fileExtension: string): boolean => {
+  return DANGEROUS_EXTENSIONS.some((ext: string) => fileExtension === `.${ext}`);
+};
+
+/**
+ * Check if filename matches suspicious patterns
+ */
+const hasSuspiciousPattern = (filename: string): boolean => {
   const suspiciousPatterns = [
     /^\./, // Hidden files
     /[<>:"|?*]/, // Invalid characters

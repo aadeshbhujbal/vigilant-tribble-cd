@@ -129,7 +129,11 @@ module.exports = [
       // Code complexity and size limits
       'max-lines': ['warn', { max: 300, skipBlankLines: true, skipComments: true }],
       'max-lines-per-function': ['warn', { max: 50, skipBlankLines: true, skipComments: true }],
-      'complexity': ['warn', { max: 10 }],
+      'complexity': ['error', { max: 4 }],
+      'max-depth': ['warn', { max: 4 }],
+      'max-params': ['warn', { max: 4 }],
+      'max-statements': ['warn', { max: 20 }],
+      'max-nested-callbacks': ['warn', { max: 3 }],
 
       // Naming conventions
       'camelcase': ['warn', { properties: 'never', ignoreDestructuring: true }],

@@ -32,9 +32,23 @@ const extractObjectFiles = (req: Request): Express.Multer.File[] => {
 
 export const extractFilesFromRequest = (req: Request): Express.Multer.File[] => {
   if (req.files) {
-    return Array.isArray(req.files) ? extractArrayFiles(req) : extractObjectFiles(req);
+    return extractFilesFromRequestFiles(req);
   }
 
+  return extractSingleFile(req);
+};
+
+/**
+ * Extract files from req.files (array or object)
+ */
+const extractFilesFromRequestFiles = (req: Request): Express.Multer.File[] => {
+  return Array.isArray(req.files) ? extractArrayFiles(req) : extractObjectFiles(req);
+};
+
+/**
+ * Extract single file from req.file
+ */
+const extractSingleFile = (req: Request): Express.Multer.File[] => {
   return req.file ? [req.file] : [];
 };
 
