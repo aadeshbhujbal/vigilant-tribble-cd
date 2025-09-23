@@ -27,7 +27,7 @@ const extractObjectFiles = (req: Request): Express.Multer.File[] => {
   if (!fileValues || typeof fileValues !== 'object') {
     return [];
   }
-  return Object.values(fileValues).flat();
+  return Object.values(fileValues as Record<string, Express.Multer.File[]>).flat();
 };
 
 export const extractFilesFromRequest = (req: Request): Express.Multer.File[] => {

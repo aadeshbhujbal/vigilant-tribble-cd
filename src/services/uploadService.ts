@@ -56,7 +56,7 @@ const getFilesToProcess = (
     return files;
   }
 
-  return Object.values(files).flat();
+  return Object.values(files as Record<string, Express.Multer.File[]>).flat();
 };
 
 /**
@@ -276,7 +276,7 @@ export const makePythonServiceRequest = async (
     );
   }
 
-  const result: PythonServiceResponse = await response.json();
+  const result = (await response.json()) as PythonServiceResponse;
 
   if (!result.success) {
     throw new Error(result.message || 'Python service processing failed');

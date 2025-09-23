@@ -7,7 +7,7 @@ import {
 } from 'express';
 import { uploadFile, getUploadStatus } from '../controllers/uploadController';
 import { createMulterConfig, validateFile, handleMulterError } from '../middleware/upload';
-import { validateClimateDocument } from '../middleware/climateValidation';
+import { climateValidationMiddleware } from '../middleware/climateValidation';
 import config from '../config';
 import logger from '../utils/logger';
 
@@ -21,7 +21,7 @@ const upload = createMulterConfig(config.fileUpload);
 const fileValidation = validateFile(config.fileUpload);
 
 // Climate document validation middleware
-const climateValidation = validateClimateDocument(config.climateValidation);
+const climateValidation = climateValidationMiddleware;
 
 // Single file upload endpoint removed - use /multiple endpoint for all uploads
 

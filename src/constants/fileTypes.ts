@@ -1,0 +1,40 @@
+export const DANGEROUS_EXTENSIONS = [
+  'exe',
+  'bat',
+  'cmd',
+  'com',
+  'scr',
+  'pif',
+  'vbs',
+  'js',
+  'jar',
+  'php',
+  'asp',
+  'aspx',
+  'jsp',
+  'sh',
+  'bash',
+  'zsh',
+  'fish',
+  'ps1',
+  'psm1',
+  'sql',
+  'db',
+  'sqlite',
+  'sqlite3',
+  'log',
+  'tmp',
+  'temp',
+  'bak',
+  'backup',
+] as const;
+
+export const ALLOWED_FILE_EXTENSIONS = ['.pdf', '.csv', '.txt', '.docx', '.xlsx'] as const;
+
+export const ALLOWED_MIME_TYPES = [
+  'application/pdf',
+  'text/csv',
+  'text/plain',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+] as const;

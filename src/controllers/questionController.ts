@@ -180,7 +180,7 @@ const handleSuccessfulSubmission = (res: Response, newQuestion: Question): void 
  */
 export const submitQuestion = (req: Request, res: Response): void => {
   try {
-    const { question, explanation } = req.body;
+    const { question, explanation } = req.body as { question: string; explanation?: string };
 
     const validationError = validateQuestionInput(question);
     if (validationError) {

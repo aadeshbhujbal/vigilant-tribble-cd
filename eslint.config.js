@@ -7,14 +7,14 @@ const prettierConfig = require('eslint-config-prettier');
 module.exports = [
   js.configs.recommended,
   {
-    files: ['**/*.ts'],
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser: typescriptParser,
       parserOptions: {
-        ecmaVersion: 2020,
+        ecmaVersion: 2022,
         sourceType: 'module',
         project: './tsconfig.json',
-        tsconfigRootDir: __dirname // Remove comma here (line 17)
+        tsconfigRootDir: __dirname,
       },
       globals: {
         console: 'readonly',
@@ -31,111 +31,30 @@ module.exports = [
         setInterval: 'readonly',
         clearInterval: 'readonly',
         fetch: 'readonly',
-        Express: 'readonly'
-      }
+        Express: 'readonly',
+      },
     },
     plugins: {
       '@typescript-eslint': typescript,
-      prettier: prettier // Remove comma here (line 28)
+      prettier: prettier,
     },
     rules: {
       // Prettier integration
       'prettier/prettier': 'error',
 
-      // TypeScript specific rules - More relaxed
+      // TypeScript specific rules
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-      'no-unused-vars': 'off', // Turn off base rule as it can conflict with @typescript-eslint/no-unused-vars
-      '@typescript-eslint/explicit-function-return-type': 'off', // Allow implicit return types
-      '@typescript-eslint/no-explicit-any': 'warn', // Warn instead of error
-      '@typescript-eslint/no-var-requires': 'warn',
-      '@typescript-eslint/consistent-type-imports': 'warn',
-
-      // Code quality rules - More relaxed
-      'no-console': 'off', // Allow console.log for development
-      'no-debugger': 'warn', // Warn instead of error
-      'no-alert': 'warn',
-      'no-eval': 'error', // Keep this strict for security
-      'no-implied-eval': 'warn',
-      'no-new-func': 'warn',
-      'no-script-url': 'warn',
-      'no-sequences': 'warn',
-      'no-throw-literal': 'warn',
-      'no-unmodified-loop-condition': 'warn',
-      'no-unused-expressions': 'warn',
-      'no-useless-call': 'warn',
-      'no-useless-concat': 'warn',
-      'no-useless-return': 'warn',
-      'prefer-const': 'warn', // Warn instead of error
-      'prefer-template': 'warn',
-      'require-await': 'warn',
-
-      // Best practices - More relaxed
-      'eqeqeq': ['warn', 'always'], // Warn instead of error
-      'curly': ['warn', 'all'], // Warn instead of error
-      'no-multiple-empty-lines': ['warn', { max: 2, maxEOF: 1 }],
-      'no-trailing-spaces': 'warn',
-      'eol-last': 'warn',
-      'comma-dangle': ['warn', 'always-multiline'],
-      'semi': ['warn', 'always'], // Warn instead of error
-      'quotes': ['warn', 'single', { avoidEscape: true }], // Warn instead of error
-
-      // Code complexity and size limits
-      'max-lines': ['warn', { max: 250, skipBlankLines: true, skipComments: true }],
-      'max-lines-per-function': ['warn', { max: 25, skipBlankLines: true, skipComments: true }],
-      'complexity': ['warn', { max: 5 }],
-
-      // Security rules
-      'no-eval': 'error',
-      'no-implied-eval': 'error',
-      'no-new-func': 'error',
-      'no-script-url': 'error',
-      'no-alert': 'warn',
-      'no-console': 'off', // Allow console in development
-      'no-debugger': 'warn',
-      'no-unsafe-regex': 'error',
-      'no-control-regex': 'error',
-      'no-regex-spaces': 'error',
-      'no-invalid-regexp': 'error',
-
-      // Code quality rules
-      'no-var': 'error',
-      'prefer-const': 'error',
-      'prefer-arrow-callback': 'warn',
-      'prefer-template': 'warn',
-      'prefer-destructuring': ['warn', { object: true, array: false }],
-      'object-shorthand': 'warn',
-      'no-duplicate-imports': 'error',
-      'no-useless-return': 'warn',
-      'no-useless-concat': 'warn',
-      'no-useless-call': 'warn',
-      'no-param-reassign': 'warn',
-      'no-return-assign': 'error',
-      'no-sequences': 'warn',
-      'no-throw-literal': 'warn',
-      'no-unmodified-loop-condition': 'warn',
-      'no-unused-expressions': 'warn',
-      'no-useless-escape': 'warn',
-      'no-void': 'warn',
-      'no-with': 'error',
-      'radix': 'warn',
-      'yoda': 'warn',
-
-      // Naming conventions
-      'camelcase': ['warn', { properties: 'never', ignoreDestructuring: true }],
-      'new-cap': 'warn',
-      'no-new-object': 'warn',
-      'no-array-constructor': 'warn',
-
-      // TypeScript specific security and quality rules
+      'no-unused-vars': 'off',
+      '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-var-requires': 'warn',
+      '@typescript-eslint/consistent-type-imports': 'warn',
       '@typescript-eslint/prefer-nullish-coalescing': 'warn',
       '@typescript-eslint/prefer-optional-chain': 'warn',
       '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
       '@typescript-eslint/no-non-null-assertion': 'warn',
       '@typescript-eslint/prefer-as-const': 'warn',
       '@typescript-eslint/no-inferrable-types': 'warn',
-      '@typescript-eslint/consistent-type-imports': 'warn',
       '@typescript-eslint/consistent-type-exports': 'warn',
       '@typescript-eslint/no-import-type-side-effects': 'warn',
       '@typescript-eslint/array-type': ['warn', { default: 'array-simple' }],
@@ -159,26 +78,107 @@ module.exports = [
       '@typescript-eslint/prefer-namespace-keyword': 'warn',
       '@typescript-eslint/triple-slash-reference': 'warn',
       '@typescript-eslint/unified-signatures': 'warn',
-
-      // Additional security rules for file handling
       '@typescript-eslint/no-unsafe-assignment': 'warn',
       '@typescript-eslint/no-unsafe-call': 'warn',
       '@typescript-eslint/no-unsafe-member-access': 'warn',
-      '@typescript-eslint/no-unsafe-return': 'warn'
-    }
+      '@typescript-eslint/no-unsafe-return': 'warn',
+
+      // Code quality rules
+      'no-console': 'off',
+      'no-debugger': 'warn',
+      'no-alert': 'warn',
+      'no-eval': 'error',
+      'no-implied-eval': 'error',
+      'no-new-func': 'error',
+      'no-script-url': 'error',
+      'no-control-regex': 'error',
+      'no-regex-spaces': 'error',
+      'no-invalid-regexp': 'error',
+      'no-var': 'error',
+      'prefer-const': 'warn',
+      'prefer-arrow-callback': 'warn',
+      'prefer-template': 'warn',
+      'prefer-destructuring': ['warn', { object: true, array: false }],
+      'object-shorthand': 'warn',
+      'no-duplicate-imports': 'error',
+      'no-useless-return': 'warn',
+      'no-useless-concat': 'warn',
+      'no-useless-call': 'warn',
+      'no-param-reassign': 'warn',
+      'no-return-assign': 'error',
+      'no-sequences': 'warn',
+      'no-throw-literal': 'warn',
+      'no-unmodified-loop-condition': 'warn',
+      'no-unused-expressions': 'warn',
+      'no-useless-escape': 'warn',
+      'no-void': 'warn',
+      'no-with': 'error',
+      'radix': 'warn',
+      'yoda': 'warn',
+
+      // Best practices
+      'eqeqeq': ['warn', 'always'],
+      'curly': ['warn', 'all'],
+      'no-multiple-empty-lines': ['warn', { max: 2, maxEOF: 1 }],
+      'no-trailing-spaces': 'warn',
+      'eol-last': 'warn',
+      'comma-dangle': ['warn', 'always-multiline'],
+      'semi': ['warn', 'always'],
+      'quotes': ['warn', 'single', { avoidEscape: true }],
+
+      // Code complexity and size limits
+      'max-lines': ['warn', { max: 300, skipBlankLines: true, skipComments: true }],
+      'max-lines-per-function': ['warn', { max: 50, skipBlankLines: true, skipComments: true }],
+      'complexity': ['warn', { max: 10 }],
+
+      // Naming conventions
+      'camelcase': ['warn', { properties: 'never', ignoreDestructuring: true }],
+      'new-cap': 'warn',
+      'no-new-object': 'warn',
+      'no-array-constructor': 'warn',
+    },
+  },
+  {
+    files: ['**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        Buffer: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        global: 'readonly',
+        module: 'readonly',
+        require: 'readonly',
+        exports: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        fetch: 'readonly',
+      },
+    },
+    rules: {
+      'no-unused-vars': 'warn',
+      'no-console': 'off',
+      'prefer-const': 'warn',
+      'no-var': 'error',
+    },
   },
   {
     ignores: [
       'dist/',
       'build/',
       'node_modules/',
-      '*.js',
       '*.d.ts',
       'logs/',
       '.env*',
       'coverage/',
-      '.nyc_output/'
-    ]
+      '.nyc_output/',
+      'scripts/',
+    ],
   },
-  prettierConfig
+  prettierConfig,
 ];

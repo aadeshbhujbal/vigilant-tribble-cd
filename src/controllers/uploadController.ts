@@ -11,7 +11,7 @@ import {
   handleProcessingError,
   createFormDataAndController,
   makePythonServiceRequest,
-} from './uploadHelpers';
+} from '../services/uploadService';
 
 /**
  * Upload file to Python service
