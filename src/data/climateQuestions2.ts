@@ -2,13 +2,11 @@
 export const climateQuestions2 = [
   {
     id: 'q16',
-    question:
-      'What climate-related training and awareness programs does the organization provide to employees?',
+    question: 'What climate-related training and awareness programs does the organization provide to employees?',
     category: 'Capacity Building',
     subcategory: 'Employee Training',
     required: false,
-    helpText:
-      'Include information about training programs, awareness initiatives, and skill development',
+    helpText: 'Include information about training programs, awareness initiatives, and skill development',
   },
   {
     id: 'q17',
@@ -20,8 +18,7 @@ export const climateQuestions2 = [
   },
   {
     id: 'q18',
-    question:
-      'What climate-related research and development activities does the organization undertake?',
+    question: 'What climate-related research and development activities does the organization undertake?',
     category: 'Innovation',
     subcategory: 'Research and Development',
     required: false,
@@ -37,13 +34,11 @@ export const climateQuestions2 = [
   },
   {
     id: 'q20',
-    question:
-      'What climate-related partnerships and collaborations does the organization participate in?',
+    question: 'What climate-related partnerships and collaborations does the organization participate in?',
     category: 'Collaboration',
     subcategory: 'Partnerships',
     required: false,
-    helpText:
-      'Include information about industry initiatives, research partnerships, and collaborative projects',
+    helpText: 'Include information about industry initiatives, research partnerships, and collaborative projects',
   },
   {
     id: 'q21',
@@ -51,18 +46,15 @@ export const climateQuestions2 = [
     category: 'Compliance',
     subcategory: 'Regulatory Compliance',
     required: true,
-    helpText:
-      'Describe compliance with climate-related regulations, reporting requirements, and standards',
+    helpText: 'Describe compliance with climate-related regulations, reporting requirements, and standards',
   },
   {
     id: 'q22',
-    question:
-      'What climate-related insurance and risk transfer mechanisms does the organization use?',
+    question: 'What climate-related insurance and risk transfer mechanisms does the organization use?',
     category: 'Risk Management',
     subcategory: 'Risk Transfer',
     required: false,
-    helpText:
-      'Include information about insurance coverage, risk sharing arrangements, and financial instruments',
+    helpText: 'Include information about insurance coverage, risk sharing arrangements, and financial instruments',
   },
   {
     id: 'q23',
@@ -70,8 +62,7 @@ export const climateQuestions2 = [
     category: 'Risk Management',
     subcategory: 'Reputational Risks',
     required: false,
-    helpText:
-      'Describe reputation risk assessment, stakeholder perception management, and communication strategies',
+    helpText: 'Describe reputation risk assessment, stakeholder perception management, and communication strategies',
   },
   {
     id: 'q24',
@@ -83,8 +74,7 @@ export const climateQuestions2 = [
   },
   {
     id: 'q25',
-    question:
-      'How does the organization ensure the quality and reliability of its climate-related data?',
+    question: 'How does the organization ensure the quality and reliability of its climate-related data?',
     category: 'Data Management',
     subcategory: 'Data Quality',
     required: false,
@@ -92,53 +82,43 @@ export const climateQuestions2 = [
   },
   {
     id: 'q26',
-    question:
-      'What climate-related external assurance or verification does the organization obtain?',
+    question: 'What climate-related external assurance or verification does the organization obtain?',
     category: 'Assurance',
     subcategory: 'External Verification',
     required: false,
-    helpText:
-      'Include information about third-party verification, assurance providers, and certification processes',
+    helpText: 'Include information about third-party verification, assurance providers, and certification processes',
   },
   {
     id: 'q27',
-    question:
-      'How does the organization benchmark its climate performance against peers and industry standards?',
+    question: 'How does the organization benchmark its climate performance against peers and industry standards?',
     category: 'Performance',
     subcategory: 'Benchmarking',
     required: false,
-    helpText:
-      'Describe benchmarking methodologies, peer comparisons, and industry standard alignment',
+    helpText: 'Describe benchmarking methodologies, peer comparisons, and industry standard alignment',
   },
   {
     id: 'q28',
-    question:
-      'What climate-related innovation and technology adoption does the organization pursue?',
+    question: 'What climate-related innovation and technology adoption does the organization pursue?',
     category: 'Innovation',
     subcategory: 'Technology Adoption',
     required: false,
-    helpText:
-      'Include information about technology investments, innovation initiatives, and digital transformation',
+    helpText: 'Include information about technology investments, innovation initiatives, and digital transformation',
   },
   {
     id: 'q29',
-    question:
-      'How does the organization manage climate-related stakeholder expectations and feedback?',
+    question: 'How does the organization manage climate-related stakeholder expectations and feedback?',
     category: 'Stakeholder Engagement',
     subcategory: 'Expectation Management',
     required: false,
-    helpText:
-      'Describe stakeholder feedback mechanisms, expectation management, and response strategies',
+    helpText: 'Describe stakeholder feedback mechanisms, expectation management, and response strategies',
   },
   {
     id: 'q30',
-    question:
-      'What climate-related scenario planning and stress testing does the organization conduct?',
+    question: 'What climate-related scenario planning and stress testing does the organization conduct?',
     category: 'Strategic Impact',
     subcategory: 'Scenario Planning',
     required: false,
-    helpText:
-      'Include information about scenario development, stress testing methodologies, and sensitivity analysis',
+    helpText: 'Include information about scenario development, stress testing methodologies, and sensitivity analysis',
   },
   {
     id: 'q31',
@@ -146,13 +126,11 @@ export const climateQuestions2 = [
     category: 'Financial Impact',
     subcategory: 'Portfolio Impact',
     required: false,
-    helpText:
-      'Describe portfolio analysis, impact assessment methodologies, and investment screening criteria',
+    helpText: 'Describe portfolio analysis, impact assessment methodologies, and investment screening criteria',
   },
   {
     id: 'q32',
-    question:
-      'What climate-related disclosure and reporting frameworks does the organization follow?',
+    question: 'What climate-related disclosure and reporting frameworks does the organization follow?',
     category: 'Reporting',
     subcategory: 'Disclosure Frameworks',
     required: true,
@@ -160,13 +138,11 @@ export const climateQuestions2 = [
   },
   {
     id: 'q33',
-    question:
-      'How does the organization ensure climate-related information is material and decision-useful?',
+    question: 'How does the organization ensure climate-related information is material and decision-useful?',
     category: 'Reporting',
     subcategory: 'Materiality Assessment',
     required: true,
-    helpText:
-      'Describe materiality assessment processes, stakeholder input, and decision-usefulness criteria',
+    helpText: 'Describe materiality assessment processes, stakeholder input, and decision-usefulness criteria',
   },
   {
     id: 'q34',
@@ -178,12 +154,10 @@ export const climateQuestions2 = [
   },
   {
     id: 'q35',
-    question:
-      'How does the organization ensure consistency and comparability of its climate-related disclosures?',
+    question: 'How does the organization ensure consistency and comparability of its climate-related disclosures?',
     category: 'Reporting',
     subcategory: 'Consistency and Comparability',
     required: false,
-    helpText:
-      'Describe consistency measures, comparability frameworks, and disclosure standardization',
+    helpText: 'Describe consistency measures, comparability frameworks, and disclosure standardization',
   },
 ];

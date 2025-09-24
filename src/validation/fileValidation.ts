@@ -46,30 +46,20 @@ const validateIndividualFile = (
   }
 
   if (!config.allowedMimeTypes.includes(file.mimetype)) {
-    fileErrors.push(
-      `File ${index + 1} (${file.originalname}) has unsupported MIME type: ${file.mimetype}`,
-    );
+    fileErrors.push(`File ${index + 1} (${file.originalname}) has unsupported MIME type: ${file.mimetype}`);
   }
 
   const fileExtension = getFileExtension(file.originalname);
   if (!config.allowedExtensions.includes(fileExtension)) {
-    fileErrors.push(
-      `File ${index + 1} (${file.originalname}) has unsupported extension: ${fileExtension}`,
-    );
+    fileErrors.push(`File ${index + 1} (${file.originalname}) has unsupported extension: ${fileExtension}`);
   }
 
   return { errors: fileErrors, warnings: fileWarnings };
 };
 
-const validateFileCount = (
-  validFiles: Express.Multer.File[],
-  config: FileUploadConfig,
-  errors: string[],
-): void => {
+const validateFileCount = (validFiles: Express.Multer.File[], config: FileUploadConfig, errors: string[]): void => {
   if (validFiles.length > config.maxFiles) {
-    errors.push(
-      `Too many files. Maximum allowed: ${config.maxFiles}, received: ${validFiles.length}`,
-    );
+    errors.push(`Too many files. Maximum allowed: ${config.maxFiles}, received: ${validFiles.length}`);
   }
 };
 
@@ -94,10 +84,7 @@ const validateAllFiles = (
   });
 };
 
-export const validateFiles = (
-  files: Express.Multer.File[],
-  config: FileUploadConfig,
-): FileValidationResult => {
+export const validateFiles = (files: Express.Multer.File[], config: FileUploadConfig): FileValidationResult => {
   const errors: string[] = [];
   const warnings: string[] = [];
 

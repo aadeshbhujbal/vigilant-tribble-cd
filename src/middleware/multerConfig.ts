@@ -18,10 +18,7 @@ export const createMulterConfig = (config: FileUploadConfig) => {
     fileFilter: (req, file, cb) => {
       const fileExtension = getFileExtension(file.originalname);
 
-      if (
-        config.allowedMimeTypes.includes(file.mimetype) &&
-        config.allowedExtensions.includes(fileExtension)
-      ) {
+      if (config.allowedMimeTypes.includes(file.mimetype) && config.allowedExtensions.includes(fileExtension)) {
         cb(null, true);
       } else {
         cb(new Error(`File type not allowed: ${file.mimetype} (${fileExtension})`));
@@ -41,15 +38,12 @@ const MULTER_ERROR_MESSAGES: Record<string, string> = {
 };
 
 const getMulterErrorMessage = (code: string): string => {
-  return MULTER_ERROR_MESSAGES[code] ?? 'File upload error';
+  // eslint-disable-next-line security/detect-object-injection
+  const errorMessage = MULTER_ERROR_MESSAGES[code];
+  return errorMessage || 'File upload error';
 };
 
-export const handleMulterError = (
-  error: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): void => {
+export const handleMulterError = (error: Error, req: Request, res: Response, next: NextFunction): void => {
   if (error instanceof multer.MulterError) {
     const message = getMulterErrorMessage(error.code);
     const statusCode = 400;

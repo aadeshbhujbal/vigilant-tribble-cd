@@ -30,9 +30,7 @@ export const sendNoValidFileError = (res: Response): null => {
 /**
  * Helper function to process files array
  */
-export const processFilesArray = (
-  files: Express.Multer.File | Express.Multer.File[],
-): Express.Multer.File[] => {
+export const processFilesArray = (files: Express.Multer.File | Express.Multer.File[]): Express.Multer.File[] => {
   const filesToProcess = Array.isArray(files) ? files : [files];
   return filesToProcess.filter((f): f is Express.Multer.File => f !== undefined);
 };
@@ -41,11 +39,7 @@ export const processFilesArray = (
  * Helper function to get files to process
  */
 const getFilesToProcess = (
-  files:
-    | Express.Multer.File
-    | Express.Multer.File[]
-    | Record<string, Express.Multer.File[]>
-    | undefined,
+  files: Express.Multer.File | Express.Multer.File[] | Record<string, Express.Multer.File[]> | undefined,
   file: Express.Multer.File | undefined,
 ): Express.Multer.File[] => {
   if (!files) {
@@ -100,9 +94,7 @@ export const validateFileInput = (req: Request, res: Response): Express.Multer.F
  * Helper function to get file counts
  */
 export const getFileCounts = (results: UploadResponse[]) => {
-  const processedFiles = results.filter(
-    r => r.success && r.processingStatus === 'completed',
-  ).length;
+  const processedFiles = results.filter(r => r.success && r.processingStatus === 'completed').length;
   const skippedFiles = results.filter(r => r.success && r.processingStatus === 'skipped').length;
   return { processedFiles, skippedFiles };
 };
@@ -144,9 +136,7 @@ export const buildUploadResponse = (results: UploadResponse[]) => {
   const statusCode = allSuccessful ? 200 : 207; // 207 Multi-Status for partial success
   const { processedFiles, skippedFiles } = getFileCounts(results);
 
-  const message = allSuccessful
-    ? buildSuccessMessage(processedFiles, skippedFiles)
-    : 'Some files failed to upload';
+  const message = allSuccessful ? buildSuccessMessage(processedFiles, skippedFiles) : 'Some files failed to upload';
 
   return { allSuccessful, statusCode, message, processedFiles, skippedFiles };
 };
@@ -181,10 +171,7 @@ export const sendUploadResponse = (
 /**
  * Helper function to handle when Python service is not configured
  */
-export const handlePythonServiceNotConfigured = (
-  file: Express.Multer.File,
-  fileId: string,
-): UploadResponse => {
+export const handlePythonServiceNotConfigured = (file: Express.Multer.File, fileId: string): UploadResponse => {
   logger.info('Python service not configured, simulating successful processing', {
     fileId,
     fileName: file.originalname,
@@ -303,9 +290,7 @@ export const makePythonServiceRequest = async (
   clearTimeout(timeoutId);
 
   if (!response.ok) {
-    throw new Error(
-      `Python service responded with status: ${response.status} ${response.statusText}`,
-    );
+    throw new Error(`Python service responded with status: ${response.status} ${response.statusText}`);
   }
 
   const result = (await response.json()) as PythonServiceResponse;

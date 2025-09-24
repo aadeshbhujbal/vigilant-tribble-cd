@@ -71,10 +71,7 @@ export const extractBasicMetadata = (file: Express.Multer.File): ClimateDocument
 /**
  * Validate file type
  */
-export const validateFileType = (
-  file: Express.Multer.File,
-  errors: ClimateValidationError[],
-): string | null => {
+export const validateFileType = (file: Express.Multer.File, errors: ClimateValidationError[]): string | null => {
   const fileExtension = getFileExtension(file.originalname).toLowerCase();
   const fileType = mapExtensionToFileType(fileExtension);
 
@@ -114,10 +111,7 @@ export const validateFileSize = (
 /**
  * Check for suspicious file characteristics
  */
-export const checkSuspiciousFile = (
-  file: Express.Multer.File,
-  _warnings: ClimateValidationWarning[],
-): void => {
+export const checkSuspiciousFile = (file: Express.Multer.File, _warnings: ClimateValidationWarning[]): void => {
   if (isSuspiciousClimateFile(file)) {
     _warnings.push({
       code: 'SUSPICIOUS_FILE',

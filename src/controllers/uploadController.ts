@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from 'express';
 import type { UploadResponse, PythonServiceResponse } from '../types/upload';
 import config from '../config';
 import logger from '../utils/logger';
+import { randomBytes } from 'crypto';
 import {
   validateFileInput,
   buildUploadResponse,
@@ -62,11 +63,7 @@ const handleFileProcessingError = (file: Express.Multer.File, error: unknown): U
   };
 };
 
-export const uploadFile = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
+export const uploadFile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const validFiles = validateFileInput(req, res);
     if (!validFiles) return;
@@ -118,10 +115,7 @@ const processFile = async (file: Express.Multer.File): Promise<UploadResponse> =
 /**
  * Forward file to Python service
  */
-const forwardToPythonService = async (
-  file: Express.Multer.File,
-  fileId: string,
-): Promise<PythonServiceResponse> => {
+const forwardToPythonService = async (file: Express.Multer.File, fileId: string): Promise<PythonServiceResponse> => {
   const { formData, controller, timeoutId } = createFormDataAndController(file, fileId);
 
   try {
@@ -173,11 +167,11 @@ export const getUploadStatus = (req: Request, res: Response, next: NextFunction)
 };
 
 /**
- * Generate unique file ID
+ * Generate unique file ID using cryptographically secure random bytes
  */
 const generateFileId = (): string => {
   const timestamp = Date.now().toString(36);
-  const random = Math.random().toString(36).substring(2, 15);
+  const random = randomBytes(8).toString('hex');
   return `${timestamp}-${random}`;
 };
 

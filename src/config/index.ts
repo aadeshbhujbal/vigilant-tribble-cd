@@ -36,7 +36,9 @@ const parseNumber = (value: string | undefined, defaultValue: number): number =>
 const validateRequiredVars = (errors: string[]): void => {
   const requiredVars = ['NODE_ENV', 'PORT'];
   requiredVars.forEach(varName => {
-    if (!process.env[varName]) {
+    // eslint-disable-next-line security/detect-object-injection
+    const envValue = process.env[varName];
+    if (!envValue) {
       errors.push(`Required environment variable ${varName} is not set`);
     }
   });
@@ -46,9 +48,7 @@ const validateRequiredVars = (errors: string[]): void => {
 const validateNodeEnv = (errors: string[]): void => {
   const validEnvs: Environment[] = ['development', 'staging', 'production'];
   if (process.env.NODE_ENV && !validEnvs.includes(process.env.NODE_ENV as Environment)) {
-    errors.push(
-      `Invalid NODE_ENV: ${process.env.NODE_ENV}. Must be one of: ${validEnvs.join(', ')}`,
-    );
+    errors.push(`Invalid NODE_ENV: ${process.env.NODE_ENV}. Must be one of: ${validEnvs.join(', ')}`);
   }
 };
 
@@ -150,18 +150,13 @@ const config: MiddlewareConfig = {
 
   // Logging configuration
   logging: {
-    level:
-      (process.env.LOG_LEVEL as 'error' | 'warn' | 'info' | 'debug') ||
-      (env === 'development' ? 'debug' : 'info'),
+    level: (process.env.LOG_LEVEL as 'error' | 'warn' | 'info' | 'debug') || (env === 'development' ? 'debug' : 'info'),
     enableConsole: parseBoolean(process.env.LOG_ENABLE_CONSOLE, env === 'development'),
     enableFile: parseBoolean(process.env.LOG_ENABLE_FILE, true),
     logDirectory: process.env.LOG_DIRECTORY ?? './logs',
     maxFileSize: process.env.LOG_MAX_FILE_SIZE ?? '10m',
     maxFiles: parseNumber(process.env.LOG_MAX_FILES, 5),
-    enableRequestLogging: parseBoolean(
-      process.env.LOG_ENABLE_REQUEST_LOGGING,
-      env === 'development',
-    ),
+    enableRequestLogging: parseBoolean(process.env.LOG_ENABLE_REQUEST_LOGGING, env === 'development'),
     enableErrorLogging: parseBoolean(process.env.LOG_ENABLE_ERROR_LOGGING, true),
   },
 

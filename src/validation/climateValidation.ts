@@ -74,10 +74,7 @@ const handleValidationErrors = (
 /**
  * Helper function to log validation warnings
  */
-const logValidationWarnings = (
-  validationResults: ClimateValidationResult[],
-  files: Express.Multer.File[],
-): void => {
+const logValidationWarnings = (validationResults: ClimateValidationResult[], files: Express.Multer.File[]): void => {
   const allWarnings = validationResults.flatMap(result => result.warnings);
   logger.info('Climate document validation warnings', {
     warnings: allWarnings,
@@ -246,7 +243,9 @@ const getValidationFunction = (fileType: string): ValidationFunction | null => {
     xlsx: validateXLSXBasicStructure,
   };
 
-  return validationMap[fileType] || null;
+  // eslint-disable-next-line security/detect-object-injection
+  const validationFunction = validationMap[fileType];
+  return validationFunction || null;
 };
 
 /**

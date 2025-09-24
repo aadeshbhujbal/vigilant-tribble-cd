@@ -33,8 +33,7 @@ const format = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
   winston.format.colorize({ all: true }),
   winston.format.printf(
-    (info: winston.Logform.TransformableInfo): string =>
-      `${info.timestamp} ${info.level}: ${info.message}`,
+    (info: winston.Logform.TransformableInfo): string => `${info.timestamp} ${info.level}: ${info.message}`,
   ),
 );
 

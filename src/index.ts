@@ -65,10 +65,7 @@ const isDevelopmentOriginAllowed = (origin: string): boolean => {
 
 // Helper function to handle CORS origin validation
 const createCorsOriginHandler = () => {
-  return (
-    origin: string | undefined,
-    callback: (_err: Error | null, _allow?: boolean) => void,
-  ): void => {
+  return (origin: string | undefined, callback: (_err: Error | null, _allow?: boolean) => void): void => {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
 
@@ -207,9 +204,7 @@ const logFileUploadEndpoint = (isDevelopment: boolean, protocol: string): void =
   if (config.enableFileUpload) {
     const uploadUrl = `${protocol}://${config.host}:${config.port}${config.apiPrefix}/upload`;
     if (isDevelopment) {
-      logger.info(
-        `📁 File upload endpoint available at: ${uploadUrl} (supports single or multiple files)`,
-      );
+      logger.info(`📁 File upload endpoint available at: ${uploadUrl} (supports single or multiple files)`);
       logger.info(`📊 Max file size: ${Math.round(config.fileUpload.maxFileSize / 1024 / 1024)}MB`);
       logger.info(`📋 Allowed file types: ${config.fileUpload.allowedMimeTypes.join(', ')}`);
     } else {

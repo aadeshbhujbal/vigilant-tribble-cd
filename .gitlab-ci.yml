@@ -4,13 +4,13 @@ include:
     file: cicd_pipeline_template.gitlab-ci.yml
 
 variables:
-  PROJECT_TYPE: "nodejs"
-  PROJECT_SUBTYPE: ""
-  DEPLOYMENT_TARGET: "pcf"
-  RUN_UNIT_TESTS: "false"
-  TRUNK_STRATEGY: "true"
-  SAST_DISABLED: "false"
-  SECRET_DETECTION_DISABLED: "false"
+  PROJECT_TYPE: 'nodejs'
+  PROJECT_SUBTYPE: ''
+  DEPLOYMENT_TARGET: 'pcf'
+  RUN_UNIT_TESTS: 'false'
+  TRUNK_STRATEGY: 'true'
+  SAST_DISABLED: 'false'
+  SECRET_DETECTION_DISABLED: 'false'
 
 code-quality-threshold-count:
   variables:

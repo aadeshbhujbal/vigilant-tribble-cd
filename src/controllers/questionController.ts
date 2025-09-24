@@ -27,10 +27,7 @@ const getCitationText = (answer: { citation?: string } | undefined): string => {
 /**
  * Helper function to get explanation text
  */
-const getExplanationText = (
-  answer: { explanation?: string } | undefined,
-  question: Question,
-): string => {
+const getExplanationText = (answer: { explanation?: string } | undefined, question: Question): string => {
   return answer?.explanation ?? question.helpText ?? 'No explanation available';
 };
 

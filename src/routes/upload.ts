@@ -1,10 +1,4 @@
-import {
-  Router,
-  type Router as ExpressRouter,
-  type Request,
-  type Response,
-  type NextFunction,
-} from 'express';
+import { Router, type Router as ExpressRouter, type Request, type Response, type NextFunction } from 'express';
 import { uploadFile, getUploadStatus } from '../controllers/uploadController';
 import { createMulterConfig, validateFile, handleMulterError } from '../middleware/upload';
 import { climateValidationMiddleware } from '../middleware/climateValidation';

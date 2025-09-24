@@ -2,8 +2,7 @@
 export const climateQuestions1 = [
   {
     id: 'q1',
-    question:
-      'What are the climate-related risks and opportunities identified in your annual report?',
+    question: 'What are the climate-related risks and opportunities identified in your annual report?',
     category: 'Risk Identification',
     subcategory: 'Physical and Transition Risks',
     required: true,
@@ -27,8 +26,7 @@ export const climateQuestions1 = [
     category: 'Strategic Impact',
     subcategory: 'Scenario Analysis',
     required: true,
-    helpText:
-      'Describe scenario analysis methodologies and how they inform strategic decision-making',
+    helpText: 'Describe scenario analysis methodologies and how they inform strategic decision-making',
   },
   {
     id: 'q4',
@@ -37,8 +35,7 @@ export const climateQuestions1 = [
     category: 'Governance',
     subcategory: 'Risk Management',
     required: true,
-    helpText:
-      'Include information about board oversight, management responsibilities, and risk management frameworks',
+    helpText: 'Include information about board oversight, management responsibilities, and risk management frameworks',
   },
   {
     id: 'q5',
@@ -56,8 +53,7 @@ export const climateQuestions1 = [
     category: 'Metrics and Targets',
     subcategory: 'Performance Indicators',
     required: true,
-    helpText:
-      'Include both financial and non-financial metrics, targets, and progress tracking mechanisms',
+    helpText: 'Include both financial and non-financial metrics, targets, and progress tracking mechanisms',
   },
   {
     id: 'q7',
@@ -70,13 +66,11 @@ export const climateQuestions1 = [
   },
   {
     id: 'q8',
-    question:
-      'What climate-related opportunities has the organization identified and how are they being pursued?',
+    question: 'What climate-related opportunities has the organization identified and how are they being pursued?',
     category: 'Opportunities',
     subcategory: 'Business Opportunities',
     required: false,
-    helpText:
-      'Include information about new products, services, markets, or business models related to climate change',
+    helpText: 'Include information about new products, services, markets, or business models related to climate change',
   },
   {
     id: 'q9',
@@ -84,8 +78,7 @@ export const climateQuestions1 = [
     category: 'Stakeholder Engagement',
     subcategory: 'Communication',
     required: false,
-    helpText:
-      'Describe engagement with investors, customers, suppliers, employees, and other stakeholders',
+    helpText: 'Describe engagement with investors, customers, suppliers, employees, and other stakeholders',
   },
   {
     id: 'q10',
@@ -93,8 +86,7 @@ export const climateQuestions1 = [
     category: 'Governance',
     subcategory: 'Policies and Procedures',
     required: false,
-    helpText:
-      'Include information about environmental policies, sustainability frameworks, and operational procedures',
+    helpText: 'Include information about environmental policies, sustainability frameworks, and operational procedures',
   },
   {
     id: 'q11',
@@ -114,13 +106,11 @@ export const climateQuestions1 = [
   },
   {
     id: 'q13',
-    question:
-      'How does the organization assess and manage physical climate risks to its operations?',
+    question: 'How does the organization assess and manage physical climate risks to its operations?',
     category: 'Risk Management',
     subcategory: 'Physical Risks',
     required: true,
-    helpText:
-      'Describe assessment of risks from extreme weather, sea level rise, and other physical climate impacts',
+    helpText: 'Describe assessment of risks from extreme weather, sea level rise, and other physical climate impacts',
   },
   {
     id: 'q14',
@@ -133,8 +123,7 @@ export const climateQuestions1 = [
   },
   {
     id: 'q15',
-    question:
-      'How does the organization integrate climate considerations into its investment decisions?',
+    question: 'How does the organization integrate climate considerations into its investment decisions?',
     category: 'Strategic Impact',
     subcategory: 'Investment Integration',
     required: false,

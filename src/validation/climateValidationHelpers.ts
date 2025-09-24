@@ -25,10 +25,7 @@ export const checkPDFHeader = (buffer: Buffer, errors: ClimateValidationError[])
 /**
  * Check for password protection in PDF
  */
-export const checkPDFPasswordProtection = (
-  buffer: Buffer,
-  errors: ClimateValidationError[],
-): void => {
+export const checkPDFPasswordProtection = (buffer: Buffer, errors: ClimateValidationError[]): void => {
   const content = buffer.toString('ascii', 0, Math.min(1024, buffer.length));
   if (content.includes('/Encrypt')) {
     errors.push({
@@ -142,9 +139,7 @@ export const getFileExtension = (filename: string): string => {
 /**
  * Get file type from extension
  */
-export const getFileTypeFromExtension = (
-  extension: string,
-): 'pdf' | 'csv' | 'txt' | 'docx' | 'xlsx' => {
+export const getFileTypeFromExtension = (extension: string): 'pdf' | 'csv' | 'txt' | 'docx' | 'xlsx' => {
   const extensionMap: Record<string, 'pdf' | 'csv' | 'txt' | 'docx' | 'xlsx'> = {
     '.pdf': 'pdf',
     '.csv': 'csv',
@@ -153,15 +148,15 @@ export const getFileTypeFromExtension = (
     '.xlsx': 'xlsx',
   };
 
-  return extensionMap[extension] || 'txt';
+  // eslint-disable-next-line security/detect-object-injection
+  const fileType = extensionMap[extension];
+  return fileType || 'txt';
 };
 
 /**
  * Map extension to file type
  */
-export const mapExtensionToFileType = (
-  extension: string,
-): 'pdf' | 'csv' | 'txt' | 'docx' | 'xlsx' => {
+export const mapExtensionToFileType = (extension: string): 'pdf' | 'csv' | 'txt' | 'docx' | 'xlsx' => {
   return getFileTypeFromExtension(extension);
 };
 
@@ -175,10 +170,7 @@ export const isSupportedClimateFileType = (fileType: string): boolean => {
 /**
  * Get maximum file size for file type
  */
-export const getMaxSizeForFileType = (
-  fileType: string,
-  config: ClimateFileValidationConfig,
-): number => {
+export const getMaxSizeForFileType = (fileType: string, config: ClimateFileValidationConfig): number => {
   const sizeMap: Record<string, number> = {
     pdf: config.pdfValidation.maxFileSize,
     csv: config.csvValidation.maxFileSize,
@@ -187,7 +179,9 @@ export const getMaxSizeForFileType = (
     xlsx: config.xlsxValidation.maxFileSize,
   };
 
-  return sizeMap[fileType] || 10 * 1024 * 1024; // 10MB default
+  // eslint-disable-next-line security/detect-object-injection
+  const maxSize = sizeMap[fileType];
+  return maxSize || 10 * 1024 * 1024; // 10MB default
 };
 
 /**
@@ -237,7 +231,10 @@ const hasSuspiciousName = (fileName: string): boolean => {
 export const formatBytes = (bytes: number): string => {
   if (bytes === 0) return '0 Bytes';
   const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'] as const;
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+  const sizeIndex = Math.min(i, sizes.length - 1);
+  // eslint-disable-next-line security/detect-object-injection
+  const sizeLabel = sizes[sizeIndex];
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizeLabel}`;
 };

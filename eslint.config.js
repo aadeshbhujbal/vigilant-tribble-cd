@@ -3,6 +3,7 @@ const typescript = require('@typescript-eslint/eslint-plugin');
 const typescriptParser = require('@typescript-eslint/parser');
 const prettier = require('eslint-plugin-prettier');
 const prettierConfig = require('eslint-config-prettier');
+const security = require('eslint-plugin-security');
 
 module.exports = [
   js.configs.recommended,
@@ -37,6 +38,7 @@ module.exports = [
     plugins: {
       '@typescript-eslint': typescript,
       prettier: prettier,
+      security: security,
     },
     rules: {
       // Prettier integration
@@ -47,7 +49,7 @@ module.exports = [
       'no-unused-vars': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-var-requires': 'warn',
+      '@typescript-eslint/no-require-imports': 'warn',
       '@typescript-eslint/consistent-type-imports': 'warn',
       '@typescript-eslint/prefer-nullish-coalescing': 'warn',
       '@typescript-eslint/prefer-optional-chain': 'warn',
@@ -63,12 +65,11 @@ module.exports = [
       '@typescript-eslint/method-signature-style': ['warn', 'property'],
       '@typescript-eslint/no-confusing-non-null-assertion': 'warn',
       '@typescript-eslint/no-duplicate-enum-values': 'error',
-      '@typescript-eslint/no-empty-interface': 'warn',
+      '@typescript-eslint/no-empty-object-type': 'warn',
       '@typescript-eslint/no-extra-non-null-assertion': 'error',
       '@typescript-eslint/no-misused-new': 'error',
       '@typescript-eslint/no-namespace': 'warn',
       '@typescript-eslint/no-non-null-asserted-optional-chain': 'error',
-      '@typescript-eslint/no-require-imports': 'warn',
       '@typescript-eslint/no-this-alias': 'warn',
       '@typescript-eslint/no-unnecessary-type-constraint': 'warn',
       '@typescript-eslint/no-unsafe-declaration-merging': 'warn',
@@ -82,8 +83,6 @@ module.exports = [
       '@typescript-eslint/no-unsafe-call': 'warn',
       '@typescript-eslint/no-unsafe-member-access': 'warn',
       '@typescript-eslint/no-unsafe-return': 'warn',
-
-      // Code quality rules
       'no-console': 'off',
       'no-debugger': 'warn',
       'no-alert': 'warn',
@@ -115,6 +114,7 @@ module.exports = [
       'no-with': 'error',
       'radix': 'warn',
       'yoda': 'warn',
+      'no-object-constructor': 'warn',
 
       // Best practices
       'eqeqeq': ['warn', 'always'],
@@ -134,12 +134,26 @@ module.exports = [
       'max-params': ['warn', { max: 4 }],
       'max-statements': ['warn', { max: 20 }],
       'max-nested-callbacks': ['warn', { max: 3 }],
+      'max-len': ['warn', { code: 120, ignoreUrls: true, ignoreStrings: true, ignoreTemplateLiterals: true }],
 
       // Naming conventions
       'camelcase': ['warn', { properties: 'never', ignoreDestructuring: true }],
       'new-cap': 'warn',
-      'no-new-object': 'warn',
       'no-array-constructor': 'warn',
+
+      // Security rules
+      'security/detect-non-literal-regexp': 'warn',
+      'security/detect-unsafe-regex': 'error',
+      'security/detect-buffer-noassert': 'error',
+      'security/detect-child-process': 'warn',
+      'security/detect-disable-mustache-escape': 'error',
+      'security/detect-eval-with-expression': 'error',
+      'security/detect-no-csrf-before-method-override': 'error',
+      'security/detect-non-literal-fs-filename': 'warn',
+      'security/detect-non-literal-require': 'warn',
+      'security/detect-object-injection': 'warn',
+      'security/detect-possible-timing-attacks': 'warn',
+      'security/detect-pseudoRandomBytes': 'error',
     },
   },
   {
@@ -164,11 +178,17 @@ module.exports = [
         fetch: 'readonly',
       },
     },
+    plugins: {
+      security: security,
+    },
     rules: {
       'no-unused-vars': 'warn',
       'no-console': 'off',
       'prefer-const': 'warn',
       'no-var': 'error',
+      'security/detect-pseudoRandomBytes': 'error',
+      'security/detect-eval-with-expression': 'error',
+      'security/detect-unsafe-regex': 'error',
     },
   },
   {
